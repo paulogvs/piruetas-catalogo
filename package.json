@@ -1,0 +1,19 @@
+{
+    "name": "piruetas-con-estilo-catalogo",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "vite": "^6.0.0"
+    },
+    "dependencies": {
+        "fabric": "^6.5.0",
+        "@imgly/background-removal": "^1.5.0",
+        "cropperjs": "^1.6.0"
+    }
+}

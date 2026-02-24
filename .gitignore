@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.env.*
+.DS_Store
+*.log
+.vscode
+.idea
+.gemini
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
