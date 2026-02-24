@@ -2,166 +2,19 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💃</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#E91E8C" />
+    <meta name="description"
+        content="Editor de catálogo de moda. Crea imágenes profesionales con stickers, texto y fondo removido." />
     <title>PIRÜETAS CON ESTILO - Catálogo</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-    <div id="app">
-        <header>
-            <h1>PIRÜETAS <span class="highlight">CON ESTILO</span></h1>
-        </header>
-
-        <main class="editor-container">
-            <aside class="sidebar">
-                <section class="tools">
-                    <h3>Herramientas</h3>
-                    <div class="button-group">
-                        <button id="add-image-btn" class="btn-primary">
-                            <span class="icon">🖼️</span> Agregar Imagen
-                        </button>
-                        <button id="add-text-btn" class="btn-secondary">
-                            <span class="icon">✍️</span> Agregar Texto
-                        </button>
-                    </div>
-                </section>
-
-                <section class="stickers">
-                    <h3>Biblioteca de Stickers</h3>
-                    <div class="sticker-grid">
-                        <div class="sticker-item" data-type="emoji">✨</div>
-                        <div class="sticker-item" data-type="emoji">🔥</div>
-                        <div class="sticker-item" data-type="emoji">💖</div>
-                        <div class="sticker-item" data-type="emoji">⭐</div>
-                        <div class="sticker-item" data-type="emoji">💃</div>
-                        <div class="sticker-item" data-type="emoji">👗</div>
-                        <div class="sticker-item" data-type="emoji">🛍️</div>
-                        <div class="sticker-item" data-type="emoji">🏷️</div>
-                    </div>
-                </section>
-
-                <section class="layers">
-                    <h3>Organizar</h3>
-                    <div class="button-row">
-                        <button id="bring-to-front-btn" class="btn-icon" title="Traer al frente">🔼</button>
-                        <button id="send-to-back-btn" class="btn-icon" title="Enviar al fondo">🔽</button>
-                        <button id="delete-btn" class="btn-danger" title="Eliminar seleccionado">🗑️</button>
-                    </div>
-                </section>
-
-                <section class="canvas-settings">
-                    <h3>Formato</h3>
-                    <select id="canvas-format">
-                        <option value="story">Historia (9:16)</option>
-                        <option value="post">Post (4:5)</option>
-                        <option value="square">Cuadrado (1:1)</option>
-                        <option value="landscape">Rectángulo (16:9)</option>
-                    </select>
-                </section>
-
-                <section class="actions">
-                    <button id="download-btn" class="btn-success">
-                        📥 Descargar Imagen
-                    </button>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="guides-toggle" checked> Guías de alineación</label>
-                    </div>
-                </section>
-            </aside>
-
-            <div class="canvas-wrapper">
-                <div class="canvas-container-inner">
-                    <canvas id="main-canvas"></canvas>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Inputs ocultos para carga de archivos -->
-    <input type="file" id="image-input" accept="image/*" style="display: none;">
-
-    <!-- Modal de Recorte -->
-    <div id="crop-modal" class="modal">
-        <div class="modal-content">
-            <h3>Recortar Imagen</h3>
-            <div class="crop-container">
-                <img id="crop-image" src="" style="max-width: 100%;">
-            </div>
-            <div class="modal-actions">
-                <button id="cancel-crop" class="btn-secondary">Cancelar</button>
-                <button id="apply-crop" class="btn-primary">Aceptar y Quitar Fondo</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Texto -->
-    <div id="text-modal" class="modal">
-        <div class="modal-content">
-            <h3>Configurar Texto</h3>
-            <div class="form-group">
-                <label>Texto:</label>
-                <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="text-input-field" placeholder="Escribe algo..." class="input-dark">
-                    <button id="ai-magic-btn" class="btn-secondary" title="Magia de IA">✨</button>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Color Texto:</label>
-                    <input type="color" id="text-color" value="#ffffff">
-                </div>
-                <div class="form-group">
-                    <label>Fondo:</label>
-                    <input type="color" id="text-bg-color" value="#000000">
-                </div>
-                <div class="form-group">
-                    <label>Opacidad Fondo:</label>
-                    <input type="range" id="text-bg-opacity" min="0" max="1" step="0.1" value="1">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button id="cancel-text" class="btn-secondary">Cancelar</button>
-                <button id="apply-text" class="btn-primary">Agregar Sticker</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Filtros -->
-    <div id="filter-modal" class="modal">
-        <div class="modal-content">
-            <h3>Filtros de Imagen</h3>
-            <div class="form-group">
-                <label>Brillo</label>
-                <input type="range" id="brightness-filter" min="-1" max="1" step="0.1" value="0">
-            </div>
-            <div class="form-group">
-                <label>Contraste</label>
-                <input type="range" id="contrast-filter" min="-1" max="1" step="0.1" value="0">
-            </div>
-            <div class="form-group">
-                <label>Saturación</label>
-                <input type="range" id="saturation-filter" min="-1" max="1" step="0.1" value="0">
-            </div>
-            <div class="modal-actions">
-                <button id="close-filters" class="btn-primary">Listo</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Indicador de Carga para Quitar Fondo -->
-    <div id="loading-overlay" class="overlay" style="display: none;">
-        <div class="loader"></div>
-        <p>Quitando fondo...</p>
-    </div>
-
-    <script type="module" src="./main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>

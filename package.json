@@ -1,19 +1,34 @@
 {
     "name": "piruetas-con-estilo-catalogo",
     "private": true,
-    "version": "0.0.0",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
-    },
-    "devDependencies": {
-        "vite": "^6.0.0"
+        "preview": "vite preview",
+        "lint": "tsc --noEmit"
     },
     "dependencies": {
-        "fabric": "^6.5.0",
-        "@imgly/background-removal": "^1.5.0",
-        "cropperjs": "^1.6.0"
+        "@imgly/background-removal": "^1.7.0",
+        "@tailwindcss/vite": "^4.1.14",
+        "@vitejs/plugin-react": "^5.0.4",
+        "konva": "^10.2.0",
+        "lucide-react": "^0.546.0",
+        "motion": "^12.23.24",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-easy-crop": "^5.5.6",
+        "react-konva": "^19.2.2",
+        "use-image": "^1.1.4",
+        "uuid": "^13.0.0",
+        "vite": "^6.2.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.14.0",
+        "@types/uuid": "^10.0.0",
+        "autoprefixer": "^10.4.21",
+        "tailwindcss": "^4.1.14",
+        "typescript": "~5.8.2"
     }
 }

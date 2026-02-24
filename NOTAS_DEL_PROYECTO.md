@@ -1,43 +1,101 @@
 # 🚨 LEER SIEMPRE ESTE ARCHIVO / ALWAYS READ THIS FILE
-Este archivo es la **fuente de verdad** del proyecto "PIRÜETAS CON ESTILO". Cada vez que iniciemos una nueva conversación o sesión de trabajo, el asistente IA debe leer este archivo por completo para entender el estado actual, las funcionalidades implementadas y los objetivos pendientes.
+
+> **INSTRUCCIÓN PARA EL ASISTENTE IA:** Antes de hacer cualquier cambio, leer este archivo completo para entender el estado del proyecto, su arquitectura y la última sesión de trabajo.
 
 ---
 
-# NOTAS DEL PROYECTO: PIRÜETAS CON ESTILO
+## 📌 Estado del Proyecto: **Versión React Optimizada** (Feb 2026)
 
-## 🎯 Objetivos Principales
-- [x] Crear un lienzo (canvas) con fondo blanco.
-- [x] Agregar botones para Imágenes y Texto.
-- [x] Permitir recortar imágenes antes de agregarlas.
-- [x] **Quitar fondo automáticamente** (Local ML) - Estilo Sticker.
-- [x] Editar stickers: rotar, escalar, mover y eliminar.
-- [x] Configurar texto: color de letra, color de fondo y opacidad.
-- [x] Marca de agua automática: "PIRÜETAS CON ESTILO".
-- [x] Descarga profesional en alta resolución (independiente del zoom).
-- [x] Formatos: Story (9:16), Post (4:5), Cuadrado (1:1), Landscape (16:9).
+### ¿Qué ES este proyecto?
+**PIRÜETAS CON ESTILO** — Editor de catálogo de moda profesional optimizado para dispositivos móviles.  
+Permite a la usuaria (Andreína) crear imágenes de producto de alta calidad directamente desde el navegador de su celular, eliminando fondos, añadiendo texto artístico y stickers.
 
-## ✅ Avances Logrados y Mejoras Pulidas
-- **Motor de Canvas**: Fabric.js v6.5.0 configurado con soporte para filtros de imagen.
-- **Filtros de Imagen**: Control de Brillo, Contraste y Saturación (Doble clic en imagen).
-- **Gestión de Capas**: Botones para Traer al frente y Enviar al fondo.
-- **Biblioteca de Stickers**: Panel con iconos/emojis rápidos con efecto de entrada "Pop".
-- **UX/UI Premium**: 
-    - Tipografía: 'Outfit' y 'Playfair Display' (Google Fonts).
-    - Guías de Alineación: Snapping automático al centro.
-    - Persistencia Local: Auto-guardado en `localStorage`.
-    - Animaciones: Efectos de entrada suaves para nuevos elementos.
-- **Responsividad**: Interfaz móvil funcional con sidebar deslizable.
-- **Exportación PRO**: Factor de escala dinámico para garantizar 1080p+ en las descargas.
+### Stack Tecnológico
+| Tecnología | Uso |
+|---|---|
+| **React 19** | Framework principal |
+| **TypeScript** | Desarrollo robusto y tipado |
+| **Vite 6** | Servidor de desarrollo y build ultra-rápido |
+| **Tailwind v4** | Sistema de estilos moderno y minimalista |
+| **Konva / react-konva** | Motor de renderizado para el canvas (drag, drop, resize) |
+| **@imgly/background-removal** | Procesamiento de imágenes para quitar fondo (100% local) |
+| **lucide-react** | Set de íconos profesionales |
 
-## 🚀 Próximos pasos
-- [ ] **Despliegue**: Subir a Vercel mediante integración con GitHub.
-- [ ] **Librería de Marca**: Añadir carpeta de imágenes locales (PNG) con logos e iconos de la tienda.
-- [ ] **Copywriting**: Ampliar frases mágicas o añadir IA si el usuario lo solicita.
+---
 
-## 🤖 Notas para IA (Contexto)
-- Proyecto desarrollado con **Vite** (Vanilla JS).
-- Dependencias clave: `fabric`, `@imgly/background-removal`, `cropperjs`.
-- El procesamiento de imágenes ocurre 100% en el cliente (navegador). No hay backend.
+## 📁 Estructura del Proyecto
 
-## 📝 Registro de Cambios
-- **2026-02-24**: Gran actualización de pulido. Implementación de filtros, capas, guías de alineación, stickers y sistema de exportación en alta resolución. Creación de script de automatización para GitHub.
+```
+c:\PROGRAMAS\PIRUETAS CON ESTILO\
+├── index.html              ← Entrada de la aplicación
+├── vite.config.ts          ← Configuración de Vite
+├── tsconfig.json           ← Configuración de TypeScript
+├── package.json            ← Dependencias y scripts
+├── actualizar_github.bat   ← Herramienta de despliegue automático
+├── NOTAS_DEL_PROYECTO.md   ← Este archivo informativo
+│
+└── src/
+    ├── main.tsx            ← Punto de montaje de React
+    ├── App.tsx             ← Aplicación principal y gestión de estado
+    ├── types.ts            ← Definiciones de tipos y formatos de imagen
+    ├── index.css           ← Estilos globales (Tailwind v4)
+    └── components/
+        ├── CanvasEditor.tsx     ← Editor visual interactivo
+        ├── Modal.tsx            ← Componente modal base mobile-ready
+        ├── Button.tsx           ← Librería de botones personalizada
+        ├── ImageUploadModal.tsx ← Gestión de archivos, recorte y procesado
+        ├── TextConfigModal.tsx  ← Herramientas de tipografía y estilo
+        ├── DownloadOptions.tsx  ← Exportación en alta resolución
+        └── FormatSelector.tsx   ← Herramienta de relaciones de aspecto (Story, Post, etc.)
+```
+
+---
+
+## 🎨 Funcionalidades Core
+
+| Característica | Detalle |
+|---|---|
+| **Subida Inteligente** | Soporte para archivos, pegar desde portapapeles y Drag & Drop |
+| **Recorte de Precisión** | Herramienta integrada para ajustar el encuadre inicial |
+| **Eliminación de Fondo** | Procesamiento por Machine Learning ejecutado localmente en el navegador |
+| **Editor Tipográfico** | Inserción de textos con control de color, fondo y opacidad |
+| **Canvas Interactivo** | Manipulación intuitiva de elementos (arrastrar, rotar, escalar) |
+| **Capas Dinámicas** | Control de profundidad (traer al frente / enviar atrás) |
+| **Persistencia Local** | Auto-guardado de sesiones para no perder el trabajo |
+| **Undo/Redo** | Historial de acciones para corregir errores rápidamente |
+| **Multiformato** | Ajuste instantáneo a Story (9:16), Post (4:5), Cuadrado (1:1) o Landscape (16:9) |
+| **Exportación Profesional** | Descarga en PNG de alta resolución con marca de agua automática |
+
+---
+
+## 🚀 Guía de Desarrollo
+
+```bash
+# Instalación de dependencias (necesario solo la primera vez)
+npm install
+
+# Iniciar servidor local
+npm run dev
+```
+
+---
+
+## 📤 Despliegue (GitHub & Vercel)
+
+El proyecto está configurado para despliegue continuo mediante Vercel:
+1. Realiza los cambios necesarios en el código.
+2. Ejecuta `actualizar_github.bat` para subir los cambios a la rama `main` de GitHub.
+3. Vercel detectará el cambio y actualizará el sitio en segundos.
+
+---
+
+## ✅ Historial de Evolución
+
+### Febrero 2026 - Gran Unificación y Limpieza
+- Se eliminó el código legacy basado en Vanilla JS (`main.js`, `style.css`).
+- Se eliminó la carpeta `ai-studio/` tras completar la migración de sus funcionalidades.
+- Unificación total bajo React 19 + Konva.
+- Documentación actualizada y estructura de archivos optimizada.
+
+---
+*Última revisión: 24 de febrero de 2026*
