@@ -20,6 +20,8 @@ export interface StickerData {
     stroke?: string;
     strokeWidth?: number;
     align?: 'left' | 'center' | 'right';
+    backgroundStyle?: 'none' | 'per-word';
+    backgroundColor?: string;
 }
 
 export interface CanvasSize {

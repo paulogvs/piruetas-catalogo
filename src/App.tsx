@@ -7,10 +7,11 @@ import { FormatSelector } from './components/FormatSelector';
 import { StickerData, FORMATS } from './types';
 import {
     ImagePlus, Type, Download, Trash2, Undo2, RotateCcw,
-    BringToFront, SendToBack, LayoutTemplate,
+    BringToFront, SendToBack, LayoutTemplate, Smile,
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
+import { EmojiPicker } from './components/EmojiPicker';
 
 const STORAGE_KEY = 'piruetas_stickers';
 const STORAGE_FORMAT = 'piruetas_format';
@@ -29,6 +30,7 @@ export default function App() {
 
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isTextModalOpen, setIsTextModalOpen] = useState(false);
+    const [isEmojiModalOpen, setIsEmojiModalOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
     const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
     const [editingSticker, setEditingSticker] = useState<StickerData | null>(null);
@@ -166,6 +168,26 @@ export default function App() {
         setEditingSticker(null);
     };
 
+    const handleAddEmoji = (emoji: string) => {
+        const newSticker: StickerData = {
+            id: uuidv4(),
+            type: 'text',
+            x: canvasSize.width / 2 - 60,
+            y: canvasSize.height / 2 - 60,
+            rotation: 0,
+            scaleX: 1,
+            scaleY: 1,
+            text: emoji,
+            fontFamily: 'Outfit',
+            fontSize: 120, // Huge emoji
+            fill: '#000000',
+            align: 'center',
+            backgroundStyle: 'none',
+        };
+        setStickers(prev => [...prev, newSticker]);
+        setSelectedId(newSticker.id);
+    };
+
     const handleDownload = async (targetWidth: number, targetHeight: number) => {
         if (!stageRef.current) return;
         setSelectedId(null);
@@ -211,6 +233,7 @@ export default function App() {
     const toolbarBtns = [
         { icon: <ImagePlus className="w-5 h-5" />, label: 'Imagen', onClick: () => setIsImageModalOpen(true) },
         { icon: <Type className="w-5 h-5" />, label: 'Texto', onClick: () => { setEditingSticker(null); setIsTextModalOpen(true); } },
+        { icon: <Smile className="w-5 h-5" />, label: 'Emoji', onClick: () => setIsEmojiModalOpen(true) },
         { icon: <LayoutTemplate className="w-5 h-5" />, label: 'Formato', onClick: () => setIsFormatModalOpen(true) },
     ];
 
@@ -300,6 +323,7 @@ export default function App() {
             />
             <DownloadOptions isOpen={isDownloadModalOpen} onClose={() => setIsDownloadModalOpen(false)} onDownload={handleDownload} currentFormat={activeFormat} />
             <FormatSelector isOpen={isFormatModalOpen} onClose={() => setIsFormatModalOpen(false)} currentFormat={activeFormat} onSelectFormat={setActiveFormat} />
+            <EmojiPicker isOpen={isEmojiModalOpen} onClose={() => setIsEmojiModalOpen(false)} onSelectEmoji={handleAddEmoji} />
         </div>
     );
 }

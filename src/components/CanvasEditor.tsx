@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Stage, Layer, Image as KonvaImage, Text as KonvaText, Transformer } from 'react-konva';
+import { Stage, Layer, Image as KonvaImage, Text as KonvaText, Transformer, Line as KonvaLine } from 'react-konva';
 import useImage from 'use-image';
 import { StickerData, CanvasSize } from '../types';
 
@@ -75,6 +75,102 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
         }
     }, [isSelected]);
 
+    // If background per word is enabled, we render a custom group
+    if (sticker.backgroundStyle === 'per-word') {
+        const words = sticker.text.split(/\s+/);
+        return (
+            <React.Fragment>
+                <KonvaText
+                    {...sticker}
+                    text={words.join('  ')} // Extra space to simulate word gap
+                    fillAfterStrokeEnabled={true}
+                    ref={shapeRef}
+                    draggable
+                    onClick={onSelect}
+                    onTap={onSelect}
+                    onDblClick={onDoubleClick}
+                    onDblTap={onDoubleClick}
+                    sceneFunc={(context, shape) => {
+                        const text = shape.getAttr('text');
+                        const fontSize = shape.getAttr('fontSize');
+                        const fontFamily = shape.getAttr('fontFamily');
+                        const fill = shape.getAttr('fill');
+                        const bgColor = shape.getAttr('backgroundColor') || '#E91E8C';
+                        const align = shape.getAttr('align') || 'center';
+
+                        context.font = `${fontSize}px ${fontFamily}`;
+                        context.textBaseline = 'middle';
+
+                        const wordsArr = text.split(/\s+/);
+                        const metrics = wordsArr.map(w => context.measureText(w));
+                        const totalWidth = metrics.reduce((sum, m) => sum + m.width + fontSize * 0.4, 0);
+
+                        let currentX = 0;
+                        if (align === 'center') currentX = -totalWidth / 2 + (shape.width() / 2);
+                        if (align === 'right') currentX = shape.width() - totalWidth;
+
+                        wordsArr.forEach((word, i) => {
+                            const wWidth = metrics[i].width;
+                            const hHeight = fontSize * 1.2;
+
+                            // Draw Background
+                            context.beginPath();
+                            const rectX = currentX - fontSize * 0.1;
+                            const rectY = -hHeight / 2 + (fontSize * 0.5);
+                            const rectW = wWidth + fontSize * 0.2;
+                            const rectH = hHeight;
+                            const radius = fontSize * 0.2;
+
+                            context.moveTo(rectX + radius, rectY);
+                            context.lineTo(rectX + rectW - radius, rectY);
+                            context.quadraticCurveTo(rectX + rectW, rectY, rectX + rectW, rectY + radius);
+                            context.lineTo(rectX + rectW, rectY + rectH - radius);
+                            context.quadraticCurveTo(rectX + rectW, rectY + rectH, rectX + rectW - radius, rectY + rectH);
+                            context.lineTo(rectX + radius, rectY + rectH);
+                            context.quadraticCurveTo(rectX, rectY + rectH, rectX, rectY + rectH - radius);
+                            context.lineTo(rectX, rectY + radius);
+                            context.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+                            context.closePath();
+
+                            context.fillStyle = bgColor;
+                            context.fill();
+
+                            // Draw Text
+                            context.fillStyle = fill;
+                            context.fillText(word, currentX, fontSize * 0.5);
+
+                            currentX += wWidth + fontSize * 0.4;
+                        });
+                    }}
+                    onDragEnd={(e) => {
+                        onChange({ ...sticker, x: e.target.x(), y: e.target.y() });
+                    }}
+                    onTransformEnd={(e) => {
+                        const node = shapeRef.current;
+                        const scaleX = node.scaleX();
+                        node.scaleX(1);
+                        node.scaleY(1);
+                        onChange({
+                            ...sticker,
+                            x: node.x(),
+                            y: node.y(),
+                            rotation: node.rotation(),
+                            fontSize: node.fontSize() * scaleX,
+                            width: Math.max(10, node.width() * scaleX),
+                        });
+                    }}
+                />
+                {isSelected && (
+                    <Transformer
+                        ref={trRef}
+                        enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
+                        boundBoxFunc={(oldBox, newBox) => (newBox.width < 10 ? oldBox : newBox)}
+                    />
+                )}
+            </React.Fragment>
+        );
+    }
+
     return (
         <React.Fragment>
             <KonvaText
@@ -100,7 +196,7 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                         y: node.y(),
                         rotation: node.rotation(),
                         fontSize: node.fontSize() * scaleX,
-                        width: Math.max(5, node.width() * scaleX),
+                        width: Math.max(10, node.width() * scaleX),
                     });
                 }}
             />
@@ -118,6 +214,7 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
 export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId, canvasSize, stageRef }: CanvasEditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
+    const [guides, setGuides] = useState<{ x: number | null, y: number | null }>({ x: null, y: null });
 
     useEffect(() => {
         const updateScale = () => {
@@ -136,6 +233,39 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
 
     const checkDeselect = (e: any) => {
         if (e.target === e.target.getStage()) setSelectedId(null);
+    };
+
+    const handleDragMove = (e: any) => {
+        const node = e.target;
+        const stage = node.getStage();
+        if (!stage) return;
+
+        const centerX = canvasSize.width / 2;
+        const centerY = canvasSize.height / 2;
+        const snapDist = 20; // Pixels to trigger snap
+
+        let newGuides = { x: null as number | null, y: null as number | null };
+
+        // Horizontal Snapping (Center X)
+        const nodeCenterX = node.x() + (node.width() * node.scaleX()) / 2;
+        if (Math.abs(nodeCenterX - centerX) < snapDist) {
+            node.x(centerX - (node.width() * node.scaleX()) / 2);
+            newGuides.x = centerX;
+        }
+
+        // Vertical Snapping (Center Y)
+        const nodeCenterY = node.y() + (node.height() * node.scaleY()) / 2;
+        if (Math.abs(nodeCenterY - centerY) < snapDist) {
+            node.y(centerY - (node.height() * node.scaleY()) / 2);
+            newGuides.y = centerY;
+        }
+
+        setGuides(newGuides);
+    };
+
+    const handleDragEnd = (e: any, sticker: StickerData, onChange: any) => {
+        setGuides({ x: null, y: null });
+        onChange({ ...sticker, x: e.target.x(), y: e.target.y() });
     };
 
     return (
@@ -217,6 +347,12 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                 >
                     <Layer>
                         {stickers.map((sticker, i) => {
+                            const onChange = (newAttrs: any) => {
+                                const s = stickers.slice();
+                                s[i] = newAttrs;
+                                setStickers(s);
+                            };
+
                             if (sticker.type === 'image') {
                                 return (
                                     <StickerImage
@@ -224,11 +360,9 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                                         sticker={sticker}
                                         isSelected={sticker.id === selectedId}
                                         onSelect={() => setSelectedId(sticker.id)}
-                                        onChange={(newAttrs: any) => {
-                                            const s = stickers.slice();
-                                            s[i] = newAttrs;
-                                            setStickers(s);
-                                        }}
+                                        onDragMove={handleDragMove}
+                                        onDragEnd={(e: any) => handleDragEnd(e, sticker, onChange)}
+                                        onChange={onChange}
                                     />
                                 );
                             }
@@ -240,16 +374,32 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                                         isSelected={sticker.id === selectedId}
                                         onSelect={() => setSelectedId(sticker.id)}
                                         onDoubleClick={() => window.dispatchEvent(new CustomEvent('edit-text', { detail: sticker.id }))}
-                                        onChange={(newAttrs: any) => {
-                                            const s = stickers.slice();
-                                            s[i] = newAttrs;
-                                            setStickers(s);
-                                        }}
+                                        onDragMove={handleDragMove}
+                                        onDragEnd={(e: any) => handleDragEnd(e, sticker, onChange)}
+                                        onChange={onChange}
                                     />
                                 );
                             }
                             return null;
                         })}
+
+                        {/* Alignment Guides */}
+                        {guides.x !== null && (
+                            <KonvaLine
+                                points={[guides.x, 0, guides.x, canvasSize.height]}
+                                stroke="#ff4757"
+                                strokeWidth={1 / scale}
+                                dash={[5, 5]}
+                            />
+                        )}
+                        {guides.y !== null && (
+                            <KonvaLine
+                                points={[0, guides.y, canvasSize.width, guides.y]}
+                                stroke="#ff4757"
+                                strokeWidth={1 / scale}
+                                dash={[5, 5]}
+                            />
+                        )}
                     </Layer>
                 </Stage>
             </div>
