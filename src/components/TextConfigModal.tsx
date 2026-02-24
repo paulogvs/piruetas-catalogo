@@ -12,7 +12,7 @@ interface TextConfigModalProps {
     canvasSize: { width: number; height: number };
 }
 
-const FONTS = ['Outfit', 'Inter', 'Playfair Display', 'Georgia', 'Arial', 'Courier New'];
+const FONTS = ['Outfit', 'Inter', 'Playfair Display', 'Dancing Script', 'Georgia', 'Arial', 'Courier New'];
 const PRESETS = [
     { label: '🪩 Elegante', fill: '#1a1a1a', stroke: undefined, fontFamily: 'Playfair Display', fontStyle: 'italic' },
     { label: '💪 Bold', fill: '#E91E8C', stroke: '#fff', strokeWidth: 6, fontFamily: 'Outfit' },
@@ -82,6 +82,23 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={editingSticker ? 'Editar Texto' : 'Añadir Texto'}>
             <div className="flex flex-col gap-5">
+                {/* Live Preview */}
+                <div className="w-full bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 p-8 min-h-[160px] flex items-center justify-center overflow-hidden relative group">
+                    <div className="absolute top-2 left-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Vista Previa</div>
+                    <p style={{
+                        fontFamily,
+                        fontSize: Math.min(fontSize, 120), // Cap size in preview
+                        color: fill,
+                        webkitTextStroke: strokeWidth > 0 ? `${strokeWidth / 2}px ${stroke}` : 'none',
+                        textAlign: align,
+                        lineHeight: 1.1,
+                        wordBreak: 'break-word',
+                        whiteSpace: 'pre-wrap'
+                    }}>
+                        {text.trim() || 'Texto de ejemplo'}
+                    </p>
+                </div>
+
                 <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}

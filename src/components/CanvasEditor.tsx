@@ -155,7 +155,64 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                     scaleX={scale}
                     scaleY={scale}
                     onMouseDown={checkDeselect}
-                    onTouchStart={checkDeselect}
+                    onTouchStart={(e) => {
+                        checkDeselect(e);
+                    }}
+                    onTouchMove={(e) => {
+                        // Multi-touch logic for pinch/rotate
+                        if (e.evt.touches.length === 2 && selectedId) {
+                            e.evt.preventDefault();
+                            const stage = e.target.getStage();
+                            if (!stage) return;
+
+                            const touch1 = e.evt.touches[0];
+                            const touch2 = e.evt.touches[1];
+
+                            const p1 = { x: touch1.clientX, y: touch1.clientY };
+                            const p2 = { x: touch2.clientX, y: touch2.clientY };
+
+                            // Calculate distance for scale
+                            const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+                            // Calculate angle for rotation
+                            const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+
+                            const sticker = stickers.find(s => s.id === selectedId);
+                            if (!sticker) return;
+
+                            // Store initial values on first multi-touch move
+                            if (!(stage as any)._lastDist) {
+                                (stage as any)._lastDist = dist;
+                                (stage as any)._lastAngle = angle;
+                                return;
+                            }
+
+                            const distDiff = dist / (stage as any)._lastDist;
+                            const angleDiff = angle - (stage as any)._lastAngle;
+
+                            const newStickers = stickers.map(s => {
+                                if (s.id === selectedId) {
+                                    return {
+                                        ...s,
+                                        scaleX: s.scaleX * distDiff,
+                                        scaleY: s.scaleY * distDiff,
+                                        rotation: s.rotation + angleDiff
+                                    };
+                                }
+                                return s;
+                            });
+
+                            setStickers(newStickers);
+                            (stage as any)._lastDist = dist;
+                            (stage as any)._lastAngle = angle;
+                        }
+                    }}
+                    onTouchEnd={(e) => {
+                        const stage = e.target.getStage();
+                        if (stage) {
+                            (stage as any)._lastDist = 0;
+                            (stage as any)._lastAngle = 0;
+                        }
+                    }}
                     ref={stageRef}
                 >
                     <Layer>
