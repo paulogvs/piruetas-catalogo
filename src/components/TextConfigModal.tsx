@@ -31,7 +31,6 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
     const [fill, setFill] = useState('#1a1a1a');
     const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word'>('none');
     const [backgroundColor, setBackgroundColor] = useState('#E91E8C');
-    const [align, setAlign] = useState<'left' | 'center' | 'right'>('center');
 
     useEffect(() => {
         if (editingSticker) {
@@ -41,7 +40,6 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setFill(editingSticker.fill || '#1a1a1a');
             setBackgroundStyle(editingSticker.backgroundStyle || 'none');
             setBackgroundColor(editingSticker.backgroundColor || '#E91E8C');
-            setAlign(editingSticker.align || 'center');
         } else {
             setText('');
             setFontFamily('Comic Neue');
@@ -49,7 +47,6 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setFill('#1a1a1a');
             setBackgroundStyle('none');
             setBackgroundColor('#E91E8C');
-            setAlign('center');
         }
     }, [editingSticker, isOpen]);
 
@@ -60,16 +57,16 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             type: 'text',
             x: editingSticker?.x !== undefined ? editingSticker.x : canvasSize.width / 2 - 200,
             y: editingSticker?.y !== undefined ? editingSticker.y : canvasSize.height / 2 - 50,
-            rotation: 0,
-            scaleX: 1,
-            scaleY: 1,
+            rotation: editingSticker?.rotation || 0,
+            scaleX: editingSticker?.scaleX || 1,
+            scaleY: editingSticker?.scaleY || 1,
             text,
             fontFamily,
             fontSize,
             fill,
             backgroundStyle,
             backgroundColor: backgroundStyle !== 'none' ? backgroundColor : undefined,
-            align,
+            align: 'center',
             width: 400,
         };
         onAddText(data);
@@ -78,119 +75,113 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={editingSticker ? 'Editar Texto' : 'Añadir Texto'}>
-            <div className="flex flex-col gap-5">
-                {/* Live Preview */}
-                <div className="w-full bg-gray-900 rounded-2xl p-8 min-h-[160px] flex items-center justify-center overflow-hidden relative group">
-                    <div className="absolute top-2 left-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Vista Previa</div>
-                    <div style={{ textAlign: align }}>
-                        {text.split(/\s+/).map((word, i) => (
-                            <span key={i} style={{
-                                display: 'inline-block',
-                                fontFamily,
-                                fontSize: Math.min(fontSize, 60),
-                                color: fill,
-                                backgroundColor: backgroundStyle === 'per-word' ? backgroundColor : 'transparent',
-                                padding: backgroundStyle === 'per-word' ? '0.1em 0.3em' : '0',
-                                borderRadius: backgroundStyle === 'per-word' ? '0.2em' : '0',
-                                margin: '0.05em',
-                                lineHeight: 1.2,
-                            }}>
-                                {word}{' '}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                <textarea
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Escribe tu texto aquí…"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl text-base focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none resize-none h-24 font-medium"
-                    autoFocus
-                />
-
-                {/* Font & Size */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Fuente</label>
-                        <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)}
-                            className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none bg-white">
-                            {FONTS.map((f) => <option key={f}>{f}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Tamaño</label>
-                        <input type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} min={20} max={400}
-                            className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none" />
-                    </div>
-                </div>
-
-                {/* Colors (Fixed Palette) */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Color del Texto</label>
-                    <div className="flex flex-wrap gap-2">
-                        {COLORS.map((c) => (
-                            <button
-                                key={c}
-                                onClick={() => setFill(c)}
-                                className={`w-8 h-8 rounded-full border-2 transition-transform ${fill === c ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-105'}`}
-                                style={{ backgroundColor: c }}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Background Multi-word Style */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Estilo de Resaltado</label>
-                    <div className="flex gap-2 mb-3">
-                        <button
-                            onClick={() => setBackgroundStyle('none')}
-                            className={`flex-1 py-2 text-xs font-bold rounded-xl border-2 transition-colors ${backgroundStyle === 'none' ? 'bg-gray-100 border-gray-300 shadow-inner' : 'border-gray-100 text-gray-400'}`}
-                        >
-                            NINGUNO
-                        </button>
-                        <button
-                            onClick={() => setBackgroundStyle('per-word')}
-                            className={`flex-1 py-2 text-xs font-bold rounded-xl border-2 transition-colors ${backgroundStyle === 'per-word' ? 'bg-pink-50 border-pink-500 text-pink-600' : 'border-gray-100 text-gray-400'}`}
-                        >
-                            BURBUJA POR PALABRA
-                        </button>
-                    </div>
-
-                    {backgroundStyle !== 'none' && (
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Color del Fondo</label>
-                            <div className="flex flex-wrap gap-2">
-                                {COLORS.map((c) => (
-                                    <button
-                                        key={c}
-                                        onClick={() => setBackgroundColor(c)}
-                                        className={`w-6 h-6 rounded-md border transition-transform ${backgroundColor === c ? 'border-black scale-110 shadow-md' : 'border-transparent'}`}
-                                        style={{ backgroundColor: c }}
-                                    />
-                                ))}
-                            </div>
+            <div className="flex flex-col gap-5 max-h-[80vh] overflow-y-auto px-1 pb-4">
+                {/* Live Preview - Sticky Header */}
+                <div className="sticky top-0 z-20 w-full bg-white border-b-2 border-gray-100 -mx-1 px-4 py-6 mb-2 flex items-center justify-center overflow-hidden shadow-sm">
+                    <div className="absolute top-1 left-2 text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] italic">Canvas Preview</div>
+                    <div className="bg-white shadow-inner border border-gray-50 p-6 rounded-lg w-full flex items-center justify-center min-h-[100px]">
+                        <div style={{ textAlign: 'center' }}>
+                            {text.split(/\s+/).map((word, i) => (
+                                <span key={i} style={{
+                                    display: 'inline-block',
+                                    fontFamily,
+                                    fontSize: Math.min(fontSize * 0.5, 40),
+                                    color: fill,
+                                    backgroundColor: backgroundStyle === 'per-word' ? backgroundColor : 'transparent',
+                                    padding: backgroundStyle === 'per-word' ? '0.2em 0.4em' : '0',
+                                    borderRadius: backgroundStyle === 'per-word' ? '0.3em' : '0',
+                                    margin: '0.05em',
+                                    lineHeight: 1,
+                                    boxShadow: backgroundStyle === 'per-word' ? `0 2px 8px ${backgroundColor}40` : 'none',
+                                }}>
+                                    {word}{' '}
+                                </span>
+                            ))}
                         </div>
-                    )}
-                </div>
-
-                {/* Alignment */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Alineación</label>
-                    <div className="flex gap-2">
-                        {(['left', 'center', 'right'] as const).map((a) => (
-                            <button key={a} onClick={() => setAlign(a)}
-                                className={`flex-1 py-2 text-sm rounded-xl border-2 transition-colors ${align === a ? 'border-[var(--color-primary)] bg-pink-50 text-[var(--color-primary)]' : 'border-gray-200 text-gray-500'}`}>
-                                {a === 'left' ? '⬅ Izq' : a === 'center' ? '⬛ Centro' : 'Der ➡'}
-                            </button>
-                        ))}
                     </div>
                 </div>
 
-                <Button onClick={handleSubmit} className="w-full" size="lg" disabled={!text.trim()}>
-                    {editingSticker ? '✅ Actualizar Texto' : '➕ Añadir al Canvas'}
-                </Button>
+                <div className="space-y-6">
+                    <textarea
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="Escribe tu texto aquí…"
+                        className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl text-lg focus:ring-4 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none resize-none h-28 font-medium placeholder:text-gray-300 transition-all"
+                        autoFocus
+                    />
+
+                    {/* Font & Size */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Fuente</label>
+                            <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)}
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all">
+                                {FONTS.map((f) => <option key={f}>{f}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Tamaño</label>
+                            <input type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} min={20} max={400}
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none font-semibold transition-all" />
+                        </div>
+                    </div>
+
+                    {/* Colors (Fixed Palette) */}
+                    <div>
+                        <label className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest">Color del Texto</label>
+                        <div className="grid grid-cols-4 xs:grid-cols-8 gap-3">
+                            {COLORS.map((c) => (
+                                <button
+                                    key={c}
+                                    onClick={() => setFill(c)}
+                                    className={`w-full aspect-square rounded-xl border-4 transition-all ${fill === c ? 'border-gray-900 scale-110 shadow-lg' : 'border-white hover:border-gray-100'}`}
+                                    style={{ backgroundColor: c }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Background Multi-word Style */}
+                    <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100">
+                        <label className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest">Estilo de Resaltado</label>
+                        <div className="flex gap-2 mb-4">
+                            <button
+                                onClick={() => setBackgroundStyle('none')}
+                                className={`flex-1 py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'none' ? 'bg-white border-gray-900 shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
+                            >
+                                LIMPIO
+                            </button>
+                            <button
+                                onClick={() => setBackgroundStyle('per-word')}
+                                className={`flex-1 py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'per-word' ? 'bg-white border-[var(--color-primary)] text-[var(--color-primary)] shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
+                            >
+                                BURBUJAS ✨
+                            </button>
+                        </div>
+
+                        {backgroundStyle !== 'none' && (
+                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">Color del Fondo</label>
+                                <div className="grid grid-cols-4 xs:grid-cols-8 gap-2">
+                                    {COLORS.map((c) => (
+                                        <button
+                                            key={c}
+                                            onClick={() => setBackgroundColor(c)}
+                                            className={`w-full aspect-square rounded-lg border-2 transition-all ${backgroundColor === c ? 'border-gray-900 scale-110 shadow-md' : 'border-transparent'}`}
+                                            style={{ backgroundColor: c }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="pt-4">
+                    <Button onClick={handleSubmit} className="w-full py-4 text-base font-black tracking-wider transition-all hover:scale-[1.02] active:scale-95" size="lg" disabled={!text.trim()}>
+                        {editingSticker ? '✅ ACTUALIZAR' : '➕ AÑADIR AL CANVAS'}
+                    </Button>
+                </div>
             </div>
         </Modal>
     );

@@ -109,17 +109,25 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                         if (align === 'center') currentX = -totalWidth / 2 + (shape.width() / 2);
                         if (align === 'right') currentX = shape.width() - totalWidth;
 
+                        const paddingX = fontSize * 0.25;
+                        const paddingY = fontSize * 0.15;
+                        const radius = fontSize * 0.35; // More rounded
+
                         wordsArr.forEach((word, i) => {
                             const wWidth = metrics[i].width;
-                            const hHeight = fontSize * 1.2;
+                            const hHeight = fontSize;
 
-                            // Draw Background
+                            // Draw Background with shadow for depth
+                            context.save();
+                            context.shadowColor = 'rgba(0,0,0,0.1)';
+                            context.shadowBlur = 10;
+                            context.shadowOffsetY = 4;
+
                             context.beginPath();
-                            const rectX = currentX - fontSize * 0.1;
-                            const rectY = -hHeight / 2 + (fontSize * 0.5);
-                            const rectW = wWidth + fontSize * 0.2;
-                            const rectH = hHeight;
-                            const radius = fontSize * 0.2;
+                            const rectX = currentX - paddingX;
+                            const rectY = -hHeight / 2 + (fontSize * 0.5) - paddingY;
+                            const rectW = wWidth + paddingX * 2;
+                            const rectH = hHeight + paddingY * 2;
 
                             context.moveTo(rectX + radius, rectY);
                             context.lineTo(rectX + rectW - radius, rectY);
@@ -134,12 +142,13 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
 
                             context.fillStyle = bgColor;
                             context.fill();
+                            context.restore();
 
                             // Draw Text
                             context.fillStyle = fill;
                             context.fillText(word, currentX, fontSize * 0.5);
 
-                            currentX += wWidth + fontSize * 0.4;
+                            currentX += wWidth + (paddingX * 2) + fontSize * 0.2;
                         });
                     }}
                     onDragEnd={(e) => {

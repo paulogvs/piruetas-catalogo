@@ -12,6 +12,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import { EmojiPicker } from './components/EmojiPicker';
+import { StampPicker } from './components/StampPicker';
 
 const STORAGE_KEY = 'piruetas_stickers';
 const STORAGE_FORMAT = 'piruetas_format';
@@ -31,6 +32,7 @@ export default function App() {
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isTextModalOpen, setIsTextModalOpen] = useState(false);
     const [isEmojiModalOpen, setIsEmojiModalOpen] = useState(false);
+    const [isStampPickerOpen, setIsStampPickerOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
     const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
     const [editingSticker, setEditingSticker] = useState<StickerData | null>(null);
@@ -234,6 +236,7 @@ export default function App() {
         { icon: <ImagePlus className="w-5 h-5" />, label: 'Imagen', onClick: () => setIsImageModalOpen(true) },
         { icon: <Type className="w-5 h-5" />, label: 'Texto', onClick: () => { setEditingSticker(null); setIsTextModalOpen(true); } },
         { icon: <Smile className="w-5 h-5" />, label: 'Emoji', onClick: () => setIsEmojiModalOpen(true) },
+        { icon: <span className="text-lg">🏷️</span>, label: 'Sellos', onClick: () => setIsStampPickerOpen(true) },
         { icon: <LayoutTemplate className="w-5 h-5" />, label: 'Formato', onClick: () => setIsFormatModalOpen(true) },
     ];
 
@@ -324,6 +327,12 @@ export default function App() {
             <DownloadOptions isOpen={isDownloadModalOpen} onClose={() => setIsDownloadModalOpen(false)} onDownload={handleDownload} currentFormat={activeFormat} />
             <FormatSelector isOpen={isFormatModalOpen} onClose={() => setIsFormatModalOpen(false)} currentFormat={activeFormat} onSelectFormat={setActiveFormat} />
             <EmojiPicker isOpen={isEmojiModalOpen} onClose={() => setIsEmojiModalOpen(false)} onSelectEmoji={handleAddEmoji} />
+            <StampPicker
+                isOpen={isStampPickerOpen}
+                onClose={() => setIsStampPickerOpen(false)}
+                onAddStamp={handleAddText}
+                canvasSize={canvasSize}
+            />
         </div>
     );
 }
