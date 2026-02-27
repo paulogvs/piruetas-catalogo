@@ -7,15 +7,18 @@ import { FormatSelector } from './components/FormatSelector';
 import { StickerData, FORMATS } from './types';
 import {
     ImagePlus, Type, Download, Trash2, Undo2, RotateCcw,
-    BringToFront, SendToBack, LayoutTemplate, Smile,
+    BringToFront, SendToBack, LayoutTemplate, Smile, Eye,
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import { EmojiPicker } from './components/EmojiPicker';
 import { StampPicker } from './components/StampPicker';
+import { OnboardingModal } from './components/OnboardingModal';
+import { PreviewModal } from './components/PreviewModal';
 
 const STORAGE_KEY = 'piruetas_stickers';
 const STORAGE_FORMAT = 'piruetas_format';
+const ONBOARDING_KEY = 'piruetas_onboarding_done';
 
 export default function App() {
     const [stickers, setStickers] = useState<StickerData[]>(() => {
@@ -35,6 +38,11 @@ export default function App() {
     const [isStampPickerOpen, setIsStampPickerOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
     const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(() => {
+        const seen = localStorage.getItem(ONBOARDING_KEY);
+        return !seen;
+    });
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [editingSticker, setEditingSticker] = useState<StickerData | null>(null);
 
     const stageRef = useRef<any>(null);
@@ -170,6 +178,11 @@ export default function App() {
         setEditingSticker(null);
     };
 
+    const handleCloseOnboarding = () => {
+        setShowOnboarding(false);
+        localStorage.setItem(ONBOARDING_KEY, 'true');
+    };
+
     const handleAddEmoji = (emoji: string) => {
         const newSticker: StickerData = {
             id: uuidv4(),
@@ -262,6 +275,11 @@ export default function App() {
                         title="Reiniciar">
                         <RotateCcw className="w-4.5 h-4.5" />
                     </button>
+                    <button onClick={() => setIsPreviewOpen(true)}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                        title="Vista Previa">
+                        <Eye className="w-4.5 h-4.5" />
+                    </button>
                 </div>
             </header>
 
@@ -305,7 +323,8 @@ export default function App() {
                 <div className="flex items-center gap-2 max-w-lg mx-auto pb-1">
                     {toolbarBtns.map((btn) => (
                         <button key={btn.label} onClick={btn.onClick}
-                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-all text-gray-600 hover:text-[var(--color-primary)] active:scale-95">
+                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)]"
+                        >
                             {btn.icon}
                             <span className="text-xs sm:text-sm font-semibold">{btn.label}</span>
                         </button>
@@ -332,6 +351,15 @@ export default function App() {
                 onClose={() => setIsStampPickerOpen(false)}
                 onAddStamp={handleAddText}
                 canvasSize={canvasSize}
+            />
+
+            <OnboardingModal isOpen={showOnboarding} onClose={handleCloseOnboarding} />
+            
+            <PreviewModal 
+                stickers={stickers} 
+                format={activeFormat}
+                isOpen={isPreviewOpen} 
+                onClose={() => setIsPreviewOpen(false)} 
             />
         </div>
     );

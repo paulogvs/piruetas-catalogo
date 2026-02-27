@@ -8,7 +8,7 @@
 
 ### ¿Qué ES este proyecto?
 **PIRÜETAS CON ESTILO** — Editor de catálogo de moda profesional optimizado para dispositivos móviles.  
-Permite a la usuaria (Andreína) crear imágenes de producto de alta calidad directamente desde el navegador de su celular, eliminando fondos, añadiendo texto artístico y stickers.
+Permite a Carlos Hurtado crear imágenes de producto de alta calidad directamente desde el navegador de su celular, eliminando fondos, añadiendo texto artístico y stickers.
 
 ### Stack Tecnológico
 | Tecnología | Uso |
