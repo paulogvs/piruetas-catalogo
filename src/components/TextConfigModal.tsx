@@ -29,7 +29,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
     const [fontFamily, setFontFamily] = useState('Comic Neue');
     const [fontSize, setFontSize] = useState(80);
     const [fill, setFill] = useState('#1a1a1a');
-    const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word' | 'letter'>('none');
+    const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word'>('none');
     const [backgroundColor, setBackgroundColor] = useState('#475569');
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setFontFamily(editingSticker.fontFamily || 'Comic Neue');
             setFontSize(editingSticker.fontSize || 80);
             setFill(editingSticker.fill || '#1a1a1a');
-            setBackgroundStyle((editingSticker.backgroundStyle as 'none' | 'per-word' | 'letter') || 'none');
+            setBackgroundStyle((editingSticker.backgroundStyle as 'none' | 'per-word') || 'none');
             setBackgroundColor(editingSticker.backgroundColor || '#475569');
         } else {
             setText('');
@@ -174,12 +174,6 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                                 className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'per-word' ? 'bg-white border-[var(--color-primary)] text-[var(--color-primary)] shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
                             >
                                 CAJA
-                            </button>
-                            <button
-                                onClick={() => { setBackgroundStyle('letter'); if (backgroundColor === '#475569') setBackgroundColor('#3B82F6'); }}
-                                className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'letter' ? 'bg-white border-[var(--color-primary)] text-[var(--color-primary)] shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
-                            >
-                                CONTORNO
                             </button>
                         </div>
                     </div>
