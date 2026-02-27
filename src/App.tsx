@@ -261,10 +261,10 @@ export default function App() {
     ];
 
     return (
-        <div className="flex flex-col h-screen bg-[var(--color-bg)] overflow-hidden select-none">
+        <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none pb-safe">
 
             {/* ── HEADER ── */}
-            <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm z-10 flex-shrink-0">
+            <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm z-10 flex-shrink-0 pt-safe">
                 <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-blue-300 rounded-xl flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-base font-serif italic">P</span>

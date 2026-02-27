@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Konva from 'konva';
 import { StickerData, FORMATS } from '../types';
-import { X, Smartphone, Monitor, Maximize2 } from 'lucide-react';
+import { X, Smartphone, Monitor, Maximize2, AlertCircle } from 'lucide-react';
 
 interface PreviewModalProps {
   stickers: StickerData[];
@@ -12,117 +12,125 @@ interface PreviewModalProps {
 
 export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'mobile' | 'mobile-full' | 'desktop'>('mobile');
+  const [viewMode, setViewMode] = useState<'mobile' | 'mobile-full' | 'desktop'>('mobile-full');
   const [stageKey, setStageKey] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   const canvasSize = FORMATS[format];
 
   useEffect(() => {
     if (!isOpen || !containerRef.current) return;
 
-    const container = containerRef.current;
-    container.innerHTML = '';
+    try {
+      setError(null);
+      const container = containerRef.current;
+      container.innerHTML = '';
 
-    const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight;
+      const containerWidth = container.offsetWidth || 320;
+      const containerHeight = container.offsetHeight || 400;
 
-    let previewWidth: number;
-    let previewHeight: number;
-    let scale: number;
+      let previewWidth: number;
+      let previewHeight: number;
+      let scale: number;
 
-    if (viewMode === 'mobile') {
-      previewWidth = Math.min(280, containerWidth - 32);
-      scale = previewWidth / canvasSize.width;
-      previewHeight = canvasSize.height * scale;
-    } else if (viewMode === 'mobile-full') {
-      previewWidth = containerWidth - 32;
-      scale = previewWidth / canvasSize.width;
-      previewHeight = canvasSize.height * scale;
-    } else {
-      previewWidth = Math.min(containerWidth - 32, canvasSize.width);
-      scale = previewWidth / canvasSize.width;
-      previewHeight = canvasSize.height * scale;
-    }
+      if (viewMode === 'mobile') {
+        previewWidth = Math.min(280, containerWidth - 32);
+        scale = previewWidth / canvasSize.width;
+        previewHeight = canvasSize.height * scale;
+      } else if (viewMode === 'mobile-full') {
+        previewWidth = Math.min(containerWidth - 32, containerHeight * (canvasSize.width / canvasSize.height));
+        previewWidth = Math.min(previewWidth, containerWidth - 32);
+        scale = previewWidth / canvasSize.width;
+        previewHeight = canvasSize.height * scale;
+      } else {
+        previewWidth = Math.min(containerWidth - 32, canvasSize.width);
+        scale = previewWidth / canvasSize.width;
+        previewHeight = canvasSize.height * scale;
+      }
 
-    const stage = new Konva.Stage({
-      container: container,
-      width: previewWidth,
-      height: previewHeight,
-      scaleX: scale,
-      scaleY: scale,
-    });
+      const stage = new Konva.Stage({
+        container: container,
+        width: previewWidth,
+        height: previewHeight,
+      });
 
-    const layer = new Konva.Layer();
-    stage.add(layer);
+      const layer = new Konva.Layer();
+      stage.add(layer);
 
-    const bg = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: canvasSize.width,
-      height: canvasSize.height,
-      fill: 'white',
-    });
-    layer.add(bg);
+      const bg = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: canvasSize.width,
+        height: canvasSize.height,
+        fill: 'white',
+      });
+      layer.add(bg);
 
-    stickers.forEach((sticker) => {
-      if (sticker.type === 'image') {
-        const imgObj = new window.Image();
-        imgObj.src = sticker.src;
-        imgObj.onload = () => {
-          const img = new Konva.Image({
+      stickers.forEach((sticker) => {
+        if (sticker.type === 'image') {
+          const imgObj = new window.Image();
+          imgObj.src = sticker.src;
+          imgObj.onload = () => {
+            const img = new Konva.Image({
+              x: sticker.x,
+              y: sticker.y,
+              image: imgObj,
+              width: imgObj.width * sticker.scaleX,
+              height: imgObj.height * sticker.scaleY,
+              rotation: sticker.rotation,
+              scaleX: sticker.scaleX,
+              scaleY: sticker.scaleY,
+              draggable: false,
+            });
+            layer.add(img);
+            layer.batchDraw();
+          };
+        } else if (sticker.type === 'text') {
+          const textGroup = new Konva.Group({
             x: sticker.x,
             y: sticker.y,
-            image: imgObj,
-            width: imgObj.width * sticker.scaleX,
-            height: imgObj.height * sticker.scaleY,
             rotation: sticker.rotation,
-            scaleX: sticker.scaleX,
-            scaleY: sticker.scaleY,
             draggable: false,
           });
-          layer.add(img);
-          layer.batchDraw();
-        };
-      } else if (sticker.type === 'text') {
-        const textGroup = new Konva.Group({
-          x: sticker.x,
-          y: sticker.y,
-          rotation: sticker.rotation,
-          draggable: false,
-        });
 
-        if (sticker.backgroundStyle === 'solid' && sticker.backgroundColor) {
-          const padding = 8;
-          const textWidth = sticker.text.length * (sticker.fontSize || 24) * 0.6;
-          const bgRect = new Konva.Rect({
-            x: -padding,
-            y: -(sticker.fontSize || 24) - padding,
-            width: textWidth + padding * 2,
-            height: (sticker.fontSize || 24) + padding * 2,
-            fill: sticker.backgroundColor,
-            cornerRadius: 8,
+          if (sticker.backgroundStyle === 'solid' && sticker.backgroundColor) {
+            const padding = 8;
+            const textWidth = sticker.text.length * (sticker.fontSize || 24) * 0.6;
+            const bgRect = new Konva.Rect({
+              x: -padding,
+              y: -(sticker.fontSize || 24) - padding,
+              width: textWidth + padding * 2,
+              height: (sticker.fontSize || 24) + padding * 2,
+              fill: sticker.backgroundColor,
+              cornerRadius: 8,
+            });
+            textGroup.add(bgRect);
+          }
+
+          const text = new Konva.Text({
+            text: sticker.text,
+            fontSize: sticker.fontSize || 24,
+            fontFamily: sticker.fontFamily || 'Outfit',
+            fill: sticker.fill || '#000000',
+            align: sticker.align || 'center',
+            fontStyle: sticker.fontStyle || 'normal',
           });
-          textGroup.add(bgRect);
+          textGroup.add(text);
+          layer.add(textGroup);
         }
+      });
 
-        const text = new Konva.Text({
-          text: sticker.text,
-          fontSize: sticker.fontSize || 24,
-          fontFamily: sticker.fontFamily || 'Outfit',
-          fill: sticker.fill || '#000000',
-          align: sticker.align || 'center',
-          fontStyle: sticker.fontStyle || 'normal',
-        });
-        textGroup.add(text);
-        layer.add(textGroup);
-      }
-    });
+      layer.draw();
 
-    layer.draw();
+      stage.scale({ x: scale, y: scale });
 
-    return () => {
-      stage.destroy();
-    };
+      return () => {
+        stage.destroy();
+      };
+    } catch (err) {
+      console.error('PreviewModal error:', err);
+      setError(err instanceof Error ? err.message : 'Error al cargar la vista previa');
+    }
   }, [stickers, canvasSize, isOpen, viewMode, stageKey]);
 
   if (!isOpen) return null;
@@ -183,13 +191,26 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
           </div>
 
           <div className="flex-1 flex items-center justify-center min-h-0">
-            <div 
-              ref={containerRef}
-              className="rounded-lg overflow-hidden shadow-lg border-2 sm:border-4 border-gray-900"
-              style={{ 
-                backgroundColor: '#fafafa',
-              }}
-            />
+            {error ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <AlertCircle className="w-12 h-12 text-red-400 mb-3" />
+                <p className="text-sm text-gray-500">{error}</p>
+                <button 
+                  onClick={() => { setError(null); setStageKey(k => k + 1); }}
+                  className="mt-4 px-4 py-2 bg-slate-800 text-white text-sm rounded-lg"
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : (
+              <div 
+                ref={containerRef}
+                className="rounded-lg overflow-hidden shadow-lg border-2 sm:border-4 border-gray-900"
+                style={{ 
+                  backgroundColor: '#fafafa',
+                }}
+              />
+            )}
           </div>
 
           <p className="text-center text-xs text-gray-400 mt-2 sm:mt-3">
