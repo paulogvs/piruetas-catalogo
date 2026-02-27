@@ -94,7 +94,7 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
             console.warn('Failed to load image:', sticker.src);
             loadedCount++;
           };
-          imgObj.src = sticker.src;
+          imgObj.src = sticker.src || '';
         } else if (sticker.type === 'text') {
           const textGroup = new Konva.Group({
             x: sticker.x || 0,

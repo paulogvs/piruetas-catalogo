@@ -2,7 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Upload, X, Sparkles, Settings } from 'lucide-react';
 import { StickerData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { removeBackground } from '@imgly/background-removal';
+import { removeBackgroundLocal } from '../utils/imageUtils';
+import { Modal } from './Modal';
+import { Button } from './Button';
 
 const API_KEY_STORAGE = 'piruetas_bg_api_key';
 
@@ -11,21 +13,6 @@ interface BrandPickerProps {
     onClose: () => void;
     onAddBrand: (sticker: StickerData) => void;
     canvasSize: { width: number; height: number };
-}
-
-async function removeBackgroundLocal(file: File): Promise<string> {
-    const blob = await removeBackground(file, {
-        progress: (key, current, total) => {
-            console.log(`Processing: ${key} - ${current}/${total}`);
-        }
-    });
-    
-    const arrayBuffer = await blob.arrayBuffer();
-    const base64 = btoa(
-        new Uint8Array(arrayBuffer)
-            .reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
-    return `data:image/png;base64,${base64}`;
 }
 
 async function removeBackgroundPoof(file: File, apiKey: string): Promise<string> {
@@ -171,150 +158,121 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            
-            <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col animate-scaleIn">
-                <div className="flex items-center justify-between p-3 border-b border-gray-100">
-                    <h3 className="font-bold text-base text-gray-900">Logos de Marca</h3>
-                    <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100">
-                        <X className="w-4 h-4 text-gray-500" />
-                    </button>
+        <Modal isOpen={isOpen} onClose={onClose} title="Logos de Marca">
+            <div className="space-y-4">
+                {/* Upload Section */}
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Subir logo de marca</h4>
+                    <div className="flex gap-3">
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            variant="secondary"
+                            className="flex-1"
+                            isLoading={isUploading && !isProcessingBg}
+                        >
+                            <Upload className="w-4 h-4 mr-1.5" />
+                            Logo
+                        </Button>
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex-1"
+                            isLoading={isProcessingBg}
+                        >
+                            <Sparkles className="w-4 h-4 mr-1.5" />
+                            Sin Fondo
+                        </Button>
+                    </div>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleUploadWithBgRemoval}
+                        className="hidden"
+                    />
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {/* Upload Section */}
-                    <div className="p-3 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border border-slate-200">
-                        <h4 className="font-semibold text-gray-900 mb-2 text-sm">Subir logo de marca</h4>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50 text-sm"
-                            >
-                                <Upload className="w-3.5 h-3.5" />
-                                {isUploading && !isProcessingBg ? 'Subiendo...' : 'Logo'}
-                            </button>
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading || isProcessingBg}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-gradient-to-r from-blue-600 to-slate-600 text-white font-medium rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
-                            >
-                                <Sparkles className="w-3.5 h-3.5" />
-                                {isProcessingBg ? 'Procesando...' : 'Sin Fondo'}
-                            </button>
+                {/* Saved Logos */}
+                {customBrands.length > 0 && (
+                    <div>
+                        <h4 className="font-bold text-gray-400 mb-3 text-[10px] uppercase tracking-widest">Tus logos guardados</h4>
+                        <div className="grid grid-cols-4 gap-3">
+                            {customBrands.map((brand) => (
+                                <div key={brand.id} className="relative group animate-fade-in-up">
+                                    <button
+                                        onClick={() => handleAddCustomImage(brand.src)}
+                                        className="w-full aspect-square rounded-xl border-2 border-gray-100 hover:border-[var(--color-primary)] transition-all overflow-hidden flex items-center justify-center bg-gray-50 shadow-sm"
+                                    >
+                                        <img
+                                            src={brand.src}
+                                            alt={brand.name}
+                                            className={`w-full h-full p-1 ${brand.src.startsWith('data:image/png') ? 'object-contain' : 'object-cover'}`}
+                                        />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteCustomBrand(brand.id)}
+                                        className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            ))}
                         </div>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleUploadWithBgRemoval}
-                            className="hidden"
-                        />
                     </div>
+                )}
 
-                    {/* Saved Logos */}
-                    {customBrands.length > 0 && (
-                        <div>
-                            <h4 className="font-medium text-gray-700 mb-2 text-xs uppercase tracking-wide">Tus logos guardados</h4>
-                            <div className="grid grid-cols-4 gap-2">
-                                {customBrands.map((brand) => (
-                                    <div key={brand.id} className="relative group">
-                                        <button
-                                            onClick={() => handleAddCustomImage(brand.src)}
-                                            className="w-full aspect-square rounded-lg border border-gray-200 hover:border-blue-400 transition-all overflow-hidden flex items-center justify-center bg-gray-50"
-                                        >
-                                            {brand.src.startsWith('data:image/png') ? (
-                                                <img src={brand.src} alt={brand.name} className="w-full h-full object-contain p-1" />
-                                            ) : (
-                                                <img src={brand.src} alt={brand.name} className="w-full h-full object-cover" />
-                                            )}
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteCustomBrand(brand.id)}
-                                            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            <X className="w-2.5 h-2.5" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                {/* API Settings */}
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <button
+                        onClick={() => setShowApiSettings(!showApiSettings)}
+                        className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-gray-900 w-full transition-colors"
+                    >
+                        <Settings className="w-3.5 h-3.5" />
+                        CONFIGURACIÓN DE API
+                        <span className={`ml-auto transform transition-transform ${showApiSettings ? 'rotate-180' : ''}`}>▼</span>
+                    </button>
 
-                    {/* API Settings */}
-                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <button 
-                            onClick={() => setShowApiSettings(!showApiSettings)}
-                            className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-blue-600 w-full"
-                        >
-                            <Settings className="w-3 h-3" />
-                            Background Removal API
-                            <span className={`ml-auto transform transition-transform ${showApiSettings ? 'rotate-180' : ''}`}>▼</span>
-                        </button>
-                        
-                        {showApiSettings && (
-                            <div className="mt-2 space-y-2 pt-2 border-t border-gray-200">
-                                <div className="flex items-center gap-2">
+                    {showApiSettings && (
+                        <div className="mt-4 space-y-3 pt-4 border-t border-gray-200">
+                            <div className="flex flex-col gap-2">
+                                <label className="flex items-center gap-2 cursor-pointer group">
                                     <input
                                         type="radio"
-                                        id="method-local"
                                         name="bgMethod"
                                         checked={bgMethod === 'local'}
                                         onChange={() => setBgMethod('local')}
-                                        className="text-blue-600"
+                                        className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300"
                                     />
-                                    <label htmlFor="method-local" className="text-xs text-gray-600">
-                                        Local (@imgly) - Gratis
-                                    </label>
-                                </div>
-                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900">Local (@imgly) · Gratis y offline</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer group">
                                     <input
                                         type="radio"
-                                        id="method-api"
                                         name="bgMethod"
                                         checked={bgMethod === 'api'}
                                         onChange={() => setBgMethod('api')}
-                                        className="text-blue-600"
+                                        className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300"
                                     />
-                                    <label htmlFor="method-api" className="text-xs text-gray-600">
-                                        API (Poof) - Más rápido
-                                    </label>
-                                </div>
-                                
-                                {bgMethod === 'api' && (
-                                    <div className="mt-2">
-                                        <input
-                                            type="password"
-                                            value={apiKey}
-                                            onChange={(e) => setApiKey(e.target.value)}
-                                            placeholder="API key..."
-                                            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        />
-                                        <button
-                                            onClick={handleSaveApiKey}
-                                            className="mt-1.5 w-full py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700"
-                                        >
-                                            Guardar
-                                        </button>
-                                    </div>
-                                )}
+                                    <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900">API (Poof) · Más rápido y preciso</span>
+                                </label>
                             </div>
-                        )}
-                    </div>
-                </div>
 
-                <style>{`
-                    @keyframes scaleIn {
-                        from { opacity: 0; transform: scale(0.95); }
-                        to { opacity: 1; transform: scale(1); }
-                    }
-                    .animate-scaleIn { animation: scaleIn 0.3s ease-out; }
-                `}</style>
+                            {bgMethod === 'api' && (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="password"
+                                        value={apiKey}
+                                        onChange={(e) => setApiKey(e.target.value)}
+                                        placeholder="Tu clave API de poof.bg"
+                                        className="flex-1 px-4 py-2 text-xs border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none transition-all"
+                                    />
+                                    <Button size="sm" onClick={handleSaveApiKey}>Guardar</Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </Modal>
     );
 }

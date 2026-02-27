@@ -20,6 +20,7 @@ export interface StickerData {
     stroke?: string;
     strokeWidth?: number;
     align?: 'left' | 'center' | 'right';
+    fontStyle?: string;
     backgroundStyle?: 'none' | 'per-word';
     backgroundColor?: string;
 }

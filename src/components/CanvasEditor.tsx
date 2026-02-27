@@ -343,7 +343,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                             const newRotation = touchRef.current.initialRotation + angleDiff;
 
                             // Apply changes
-                            const newStickers = stickers.map(s => {
+                            setStickers(prev => prev.map(s => {
                                 if (s.id === selectedId) {
                                     return {
                                         ...s,
@@ -353,9 +353,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                                     };
                                 }
                                 return s;
-                            });
-
-                            setStickers(newStickers);
+                            }));
                         }
                     }}
                     onTouchEnd={(e) => {
