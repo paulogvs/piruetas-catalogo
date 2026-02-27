@@ -26,8 +26,8 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
       const container = containerRef.current;
       container.innerHTML = '';
 
-      const containerWidth = container.offsetWidth || 320;
-      const containerHeight = container.offsetHeight || 400;
+      const containerWidth = Math.max(container.offsetWidth || 320, 280);
+      const containerHeight = Math.max(container.offsetHeight || 400, 300);
 
       let previewWidth: number;
       let previewHeight: number;
@@ -38,8 +38,8 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
         scale = previewWidth / canvasSize.width;
         previewHeight = canvasSize.height * scale;
       } else if (viewMode === 'mobile-full') {
-        previewWidth = Math.min(containerWidth - 32, containerHeight * (canvasSize.width / canvasSize.height));
-        previewWidth = Math.min(previewWidth, containerWidth - 32);
+        const aspectRatio = canvasSize.width / canvasSize.height;
+        previewWidth = Math.min(containerWidth - 32, containerHeight * aspectRatio);
         scale = previewWidth / canvasSize.width;
         previewHeight = canvasSize.height * scale;
       } else {
@@ -47,6 +47,8 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
         scale = previewWidth / canvasSize.width;
         previewHeight = canvasSize.height * scale;
       }
+
+      console.log('Preview: creating stage', { previewWidth, previewHeight, scale, stickers: stickers.length });
 
       const stage = new Konva.Stage({
         container: container,
@@ -66,49 +68,43 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
       });
       layer.add(bg);
 
+      let loadedCount = 0;
+      const totalStickers = stickers.length;
+
       stickers.forEach((sticker) => {
         if (sticker.type === 'image') {
           const imgObj = new window.Image();
-          imgObj.src = sticker.src;
           imgObj.onload = () => {
             const img = new Konva.Image({
-              x: sticker.x,
-              y: sticker.y,
+              x: sticker.x || 0,
+              y: sticker.y || 0,
               image: imgObj,
-              width: imgObj.width * sticker.scaleX,
-              height: imgObj.height * sticker.scaleY,
-              rotation: sticker.rotation,
-              scaleX: sticker.scaleX,
-              scaleY: sticker.scaleY,
+              width: (imgObj.width * (sticker.scaleX || 1)),
+              height: (imgObj.height * (sticker.scaleY || 1)),
+              rotation: sticker.rotation || 0,
+              scaleX: sticker.scaleX || 1,
+              scaleY: sticker.scaleY || 1,
               draggable: false,
             });
             layer.add(img);
             layer.batchDraw();
+            loadedCount++;
           };
+          imgObj.onerror = () => {
+            console.warn('Failed to load image:', sticker.src);
+            loadedCount++;
+          };
+          imgObj.src = sticker.src;
         } else if (sticker.type === 'text') {
           const textGroup = new Konva.Group({
-            x: sticker.x,
-            y: sticker.y,
-            rotation: sticker.rotation,
+            x: sticker.x || 0,
+            y: sticker.y || 0,
+            rotation: sticker.rotation || 0,
             draggable: false,
           });
 
-          if (sticker.backgroundStyle === 'solid' && sticker.backgroundColor) {
-            const padding = 8;
-            const textWidth = sticker.text.length * (sticker.fontSize || 24) * 0.6;
-            const bgRect = new Konva.Rect({
-              x: -padding,
-              y: -(sticker.fontSize || 24) - padding,
-              width: textWidth + padding * 2,
-              height: (sticker.fontSize || 24) + padding * 2,
-              fill: sticker.backgroundColor,
-              cornerRadius: 8,
-            });
-            textGroup.add(bgRect);
-          }
-
           const text = new Konva.Text({
-            text: sticker.text,
+            text: sticker.text || '',
             fontSize: sticker.fontSize || 24,
             fontFamily: sticker.fontFamily || 'Outfit',
             fill: sticker.fill || '#000000',
@@ -121,8 +117,13 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
       });
 
       layer.draw();
-
       stage.scale({ x: scale, y: scale });
+
+      setTimeout(() => {
+        if (container.children.length === 0) {
+          setError('No se pudo renderizar la vista previa');
+        }
+      }, 1000);
 
       return () => {
         stage.destroy();

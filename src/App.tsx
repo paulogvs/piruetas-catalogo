@@ -229,13 +229,20 @@ export default function App() {
         stage.add(bgLayer); bgLayer.moveToBottom();
 
         const wLayer = new Konva.Layer();
-        const wFontSize = Math.min(targetWidth, targetHeight) * 0.06;
-        wLayer.add(new Konva.Text({
-            text: 'PIRÜETAS CON ESTILO', fontSize: wFontSize, fontFamily: 'Outfit',
-            fontStyle: 'bold', fill: 'white', stroke: 'black',
-            strokeWidth: Math.max(1, wFontSize * 0.04), opacity: 0.2,
-            x: 0, y: targetHeight - wFontSize * 2.5, width: targetWidth, align: 'center',
-        }));
+        const wFontSize = Math.min(targetWidth, targetHeight) * 0.08;
+        const wText = new Konva.Text({
+            text: 'PIRÜETAS CON ESTILO', 
+            fontSize: wFontSize, 
+            fontFamily: 'Comic Sans MS',
+            fontStyle: 'bold', 
+            fill: '#475569',
+            opacity: 0.3,
+            x: 0, 
+            y: targetHeight / 2 - wFontSize / 2, 
+            width: targetWidth, 
+            align: 'center',
+        });
+        wLayer.add(wText);
         stage.add(wLayer);
 
         const dataURL = stage.toDataURL({ pixelRatio: 1, mimeType: 'image/png' });

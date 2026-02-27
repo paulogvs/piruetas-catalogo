@@ -48,9 +48,28 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-scaleIn">
         <div className="p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-tr from-[var(--color-primary)] to-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-white font-bold text-2xl font-serif italic">P</span>
             </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Bienvenido a <span className="text-[var(--color-primary)]">PIRÜETAS</span>
+            </h2>
+            <p className="text-gray-500">
+              Crea imágenes de moda profesionales en segundos
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {steps.map((step, index) => (
+              <div 
+                key={index}
+                className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-blue-200 transition-colors"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-[var(--color-primary)] flex-shrink-0">
+                  {step.icon}
+                </div>
+                </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Bienvenido a <span className="text-pink-500">PIRÜETAS</span>
             </h2>
@@ -79,7 +98,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
 
           <button
             onClick={onClose}
-            className="w-full mt-8 py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-2xl shadow-lg shadow-pink-500/30 hover:shadow-xl hover:shadow-pink-500/40 active:scale-[0.98] transition-all"
+            className="w-full mt-8 py-4 bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 active:scale-[0.98] transition-all"
           >
             ¡Empezar a crear!
           </button>
@@ -90,7 +109,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
         </div>
         
         <div className="h-1.5 bg-gray-100">
-          <div className="h-full bg-gradient-to-r from-pink-500 to-rose-400 w-full animate-progress" />
+          <div className="h-full bg-gradient-to-r from-[var(--color-primary)] to-blue-400 w-full animate-progress" />
         </div>
       </div>
 
