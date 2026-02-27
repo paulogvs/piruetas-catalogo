@@ -63,25 +63,6 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
             {steps.map((step, index) => (
               <div 
                 key={index}
-                className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-blue-200 transition-colors"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-[var(--color-primary)] flex-shrink-0">
-                  {step.icon}
-                </div>
-                </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Bienvenido a <span className="text-pink-500">PIRÜETAS</span>
-            </h2>
-            <p className="text-gray-500">
-              Crea imágenes de moda profesionales en segundos
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {steps.map((step, index) => (
-              <div 
-                key={index}
                 className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-pink-200 transition-colors"
                 style={{ animationDelay: `${index * 100}ms` }}
               >

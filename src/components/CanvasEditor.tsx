@@ -75,14 +75,13 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
         }
     }, [isSelected]);
 
-    // If background per word is enabled, we render a custom group
-    if (sticker.backgroundStyle === 'per-word') {
-        const words = sticker.text.split(/\s+/);
+    // If background per word or per letter is enabled, we render a custom group
+    if (sticker.backgroundStyle === 'per-word' || sticker.backgroundStyle === 'letter') {
+        const isLetter = sticker.backgroundStyle === 'letter';
         return (
             <React.Fragment>
                 <KonvaText
                     {...sticker}
-                    text={words.join('  ')} // Extra space to simulate word gap
                     fillAfterStrokeEnabled={true}
                     ref={shapeRef}
                     draggable
@@ -101,21 +100,41 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                         context.font = `${fontSize}px ${fontFamily}`;
                         context.textBaseline = 'middle';
 
-                        const wordsArr = text.split(/\s+/);
-                        const metrics = wordsArr.map(w => context.measureText(w));
-                        const totalWidth = metrics.reduce((sum, m) => sum + m.width + fontSize * 0.4, 0);
+                        // Split by words or by letters
+                        const isLetter = shape.getAttr('backgroundStyle') === 'letter';
+                        let items: string[];
+                        
+                        if (isLetter) {
+                            // Split into individual letters (preserve spaces as separate items)
+                            items = text.split('').filter((char: string) => char !== ' ');
+                        } else {
+                            items = text.split(/\s+/);
+                        }
+                        
+                        const metrics = items.map((item: string) => context.measureText(item));
+                        const totalWidth = metrics.reduce((sum: number, m: TextMetrics) => sum + m.width + fontSize * 0.4, 0);
 
                         let currentX = 0;
                         if (align === 'center') currentX = -totalWidth / 2 + (shape.width() / 2);
                         if (align === 'right') currentX = shape.width() - totalWidth;
 
-                        const paddingX = fontSize * 0.25;
+                        const paddingX = fontSize * (isLetter ? 0.15 : 0.25);
                         const paddingY = fontSize * 0.15;
-                        const radius = fontSize * 0.35; // More rounded
+                        const radius = fontSize * 0.35;
 
-                        wordsArr.forEach((word, i) => {
-                            const wWidth = metrics[i].width;
+                        // Track x position for each item
+                        let xPositions: number[] = [];
+                        let runningX = currentX;
+                        items.forEach((item: string, i: number) => {
+                            xPositions.push(runningX);
+                            runningX += metrics[i].width + (paddingX * 2) + fontSize * (isLetter ? 0.1 : 0.2);
+                        });
+
+                        // Draw background boxes for each item (word or letter)
+                        items.forEach((item: string, i: number) => {
+                            const itemWidth = metrics[i].width;
                             const hHeight = fontSize;
+                            const xPos = xPositions[i];
 
                             // Draw Background with shadow for depth
                             context.save();
@@ -124,9 +143,9 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                             context.shadowOffsetY = 4;
 
                             context.beginPath();
-                            const rectX = currentX - paddingX;
+                            const rectX = xPos - paddingX;
                             const rectY = -hHeight / 2 + (fontSize * 0.5) - paddingY;
-                            const rectW = wWidth + paddingX * 2;
+                            const rectW = itemWidth + paddingX * 2;
                             const rectH = hHeight + paddingY * 2;
 
                             context.moveTo(rectX + radius, rectY);
@@ -145,10 +164,8 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                             context.restore();
 
                             // Draw Text
-                            context.fillStyle = fill;
-                            context.fillText(word, currentX, fontSize * 0.5);
-
-                            currentX += wWidth + (paddingX * 2) + fontSize * 0.2;
+                            context.fillStyle = fill || '#000000';
+                            context.fillText(item, xPos, fontSize * 0.5);
                         });
                     }}
                     onDragEnd={(e) => {
