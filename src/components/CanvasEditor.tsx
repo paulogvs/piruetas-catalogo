@@ -224,6 +224,15 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
     const containerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
     const [guides, setGuides] = useState<{ x: number | null, y: number | null }>({ x: null, y: null });
+    
+    // Touch gesture refs
+    const touchRef = useRef<{
+        initialDistance: number;
+        initialAngle: number;
+        initialScale: number;
+        initialRotation: number;
+        active: boolean;
+    }>({ initialDistance: 0, initialAngle: 0, initialScale: 1, initialRotation: 0, active: false });
 
     useEffect(() => {
         const updateScale = () => {
@@ -301,55 +310,60 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                         // Multi-touch logic for pinch/rotate
                         if (e.evt.touches.length === 2 && selectedId) {
                             e.evt.preventDefault();
-                            const stage = e.target.getStage();
-                            if (!stage) return;
-
+                            
                             const touch1 = e.evt.touches[0];
                             const touch2 = e.evt.touches[1];
 
                             const p1 = { x: touch1.clientX, y: touch1.clientY };
                             const p2 = { x: touch2.clientX, y: touch2.clientY };
 
-                            // Calculate distance for scale
-                            const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-                            // Calculate angle for rotation
-                            const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+                            // Calculate current distance and angle
+                            const currentDist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+                            const currentAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
 
                             const sticker = stickers.find(s => s.id === selectedId);
                             if (!sticker) return;
 
-                            // Store initial values on first multi-touch move
-                            if (!(stage as any)._lastDist) {
-                                (stage as any)._lastDist = dist;
-                                (stage as any)._lastAngle = angle;
+                            // Initialize on first touch move
+                            if (!touchRef.current.active) {
+                                touchRef.current = {
+                                    initialDistance: currentDist,
+                                    initialAngle: currentAngle,
+                                    initialScale: sticker.scaleX || 1,
+                                    initialRotation: sticker.rotation || 0,
+                                    active: true
+                                };
                                 return;
                             }
 
-                            const distDiff = dist / (stage as any)._lastDist;
-                            const angleDiff = angle - (stage as any)._lastAngle;
+                            // Calculate scale change (pinch)
+                            const scaleFactor = currentDist / touchRef.current.initialDistance;
+                            const newScale = Math.max(0.1, Math.min(5, touchRef.current.initialScale * scaleFactor));
+                            
+                            // Calculate rotation change
+                            const angleDiff = currentAngle - touchRef.current.initialAngle;
+                            const newRotation = touchRef.current.initialRotation + angleDiff;
 
+                            // Apply changes
                             const newStickers = stickers.map(s => {
                                 if (s.id === selectedId) {
                                     return {
                                         ...s,
-                                        scaleX: s.scaleX * distDiff,
-                                        scaleY: s.scaleY * distDiff,
-                                        rotation: s.rotation + angleDiff
+                                        scaleX: newScale,
+                                        scaleY: newScale,
+                                        rotation: newRotation
                                     };
                                 }
                                 return s;
                             });
 
                             setStickers(newStickers);
-                            (stage as any)._lastDist = dist;
-                            (stage as any)._lastAngle = angle;
                         }
                     }}
                     onTouchEnd={(e) => {
-                        const stage = e.target.getStage();
-                        if (stage) {
-                            (stage as any)._lastDist = 0;
-                            (stage as any)._lastAngle = 0;
+                        // Reset touch state when fingers lifted
+                        if (e.evt.touches.length < 2) {
+                            touchRef.current.active = false;
                         }
                     }}
                     ref={stageRef}

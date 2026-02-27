@@ -15,6 +15,7 @@ import { EmojiPicker } from './components/EmojiPicker';
 import { StampPicker } from './components/StampPicker';
 import { OnboardingModal } from './components/OnboardingModal';
 import { PreviewModal } from './components/PreviewModal';
+import { BrandPicker } from './components/BrandPicker';
 
 const STORAGE_KEY = 'piruetas_stickers';
 const STORAGE_FORMAT = 'piruetas_format';
@@ -43,6 +44,7 @@ export default function App() {
         return !seen;
     });
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isBrandPickerOpen, setIsBrandPickerOpen] = useState(false);
     const [editingSticker, setEditingSticker] = useState<StickerData | null>(null);
 
     const stageRef = useRef<any>(null);
@@ -203,6 +205,11 @@ export default function App() {
         setSelectedId(newSticker.id);
     };
 
+    const handleAddBrand = (brandSticker: StickerData) => {
+        setStickers(prev => [...prev, brandSticker]);
+        setSelectedId(brandSticker.id);
+    };
+
     const handleDownload = async (targetWidth: number, targetHeight: number) => {
         if (!stageRef.current) return;
         setSelectedId(null);
@@ -247,9 +254,9 @@ export default function App() {
 
     const toolbarBtns = [
         { icon: <ImagePlus className="w-5 h-5" />, label: 'Imagen', onClick: () => setIsImageModalOpen(true) },
+        { icon: <span className="text-lg">🏷️</span>, label: 'Marcas', onClick: () => setIsBrandPickerOpen(true) },
         { icon: <Type className="w-5 h-5" />, label: 'Texto', onClick: () => { setEditingSticker(null); setIsTextModalOpen(true); } },
         { icon: <Smile className="w-5 h-5" />, label: 'Emoji', onClick: () => setIsEmojiModalOpen(true) },
-        { icon: <span className="text-lg">🏷️</span>, label: 'Sellos', onClick: () => setIsStampPickerOpen(true) },
         { icon: <LayoutTemplate className="w-5 h-5" />, label: 'Formato', onClick: () => setIsFormatModalOpen(true) },
     ];
 
@@ -360,6 +367,13 @@ export default function App() {
                 format={activeFormat}
                 isOpen={isPreviewOpen} 
                 onClose={() => setIsPreviewOpen(false)} 
+            />
+
+            <BrandPicker 
+                isOpen={isBrandPickerOpen}
+                onClose={() => setIsBrandPickerOpen(false)}
+                onAddBrand={handleAddBrand}
+                canvasSize={canvasSize}
             />
         </div>
     );
