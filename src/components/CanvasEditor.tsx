@@ -100,8 +100,7 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                         context.font = `${fontSize}px ${fontFamily}`;
                         context.textBaseline = 'middle';
 
-                        // Split by words or by letters
-                        const isLetter = shape.getAttr('backgroundStyle') === 'letter';
+                        // Use closure variable instead of getAttr
                         let items: string[];
                         
                         if (isLetter) {
