@@ -31,7 +31,7 @@ export function DownloadOptions({ isOpen, onClose, onDownload, currentFormat }: 
                         <button
                             key={opt.label}
                             onClick={() => { onDownload(opt.w, opt.h); onClose(); }}
-                            className="flex items-center justify-between p-4 rounded-2xl border-2 border-gray-200 hover:border-[var(--color-primary)] hover:bg-pink-50 transition-all group"
+                            className="flex items-center justify-between p-4 rounded-2xl border-2 border-gray-200 hover:border-[var(--color-primary)] hover:bg-blue-50 transition-all group"
                         >
                             <div className="text-left">
                                 <p className="font-semibold text-gray-800 group-hover:text-[var(--color-primary)]">{opt.label}</p>

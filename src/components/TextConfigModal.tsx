@@ -16,10 +16,10 @@ const FONTS = ['Comic Neue', 'Outfit', 'Playfair Display', 'Bebas Neue', 'Lobste
 const COLORS = [
     '#ffffff', // Blanco
     '#1a1a1a', // Negro
-    '#E91E8C', // Rosa Pirüetas
+    '#475569', // Azul Plomo
+    '#3B82F6', // Azul
     '#FFD700', // Dorado
     '#FF4500', // Naranja
-    '#00BFFF', // Azul
     '#32CD32', // Verde
     '#9370DB', // Púrpura
 ];
@@ -30,7 +30,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
     const [fontSize, setFontSize] = useState(80);
     const [fill, setFill] = useState('#1a1a1a');
     const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word'>('none');
-    const [backgroundColor, setBackgroundColor] = useState('#E91E8C');
+    const [backgroundColor, setBackgroundColor] = useState('#475569');
 
     useEffect(() => {
         if (editingSticker) {
@@ -39,14 +39,14 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setFontSize(editingSticker.fontSize || 80);
             setFill(editingSticker.fill || '#1a1a1a');
             setBackgroundStyle(editingSticker.backgroundStyle || 'none');
-            setBackgroundColor(editingSticker.backgroundColor || '#E91E8C');
+            setBackgroundColor(editingSticker.backgroundColor || '#475569');
         } else {
             setText('');
             setFontFamily('Comic Neue');
             setFontSize(80);
             setFill('#1a1a1a');
             setBackgroundStyle('none');
-            setBackgroundColor('#E91E8C');
+            setBackgroundColor('#475569');
         }
     }, [editingSticker, isOpen]);
 
@@ -106,7 +106,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Escribe tu texto aquí…"
-                        className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl text-lg focus:ring-4 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none resize-none h-28 font-medium placeholder:text-gray-300 transition-all"
+                        className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl text-lg focus:ring-4 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none resize-none h-28 font-medium placeholder:text-gray-300 transition-all"
                         autoFocus
                     />
 
@@ -115,36 +115,54 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                         <div>
                             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Fuente</label>
                             <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all">
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all">
                                 {FONTS.map((f) => <option key={f}>{f}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Tamaño</label>
                             <input type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} min={20} max={400}
-                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-pink-100 focus:border-[var(--color-primary)] outline-none font-semibold transition-all" />
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none font-semibold transition-all" />
                         </div>
                     </div>
 
-                    {/* Colors (Fixed Palette) */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest">Color del Texto</label>
-                        <div className="grid grid-cols-4 xs:grid-cols-8 gap-3">
-                            {COLORS.map((c) => (
-                                <button
-                                    key={c}
-                                    onClick={() => setFill(c)}
-                                    className={`w-full aspect-square rounded-xl border-4 transition-all ${fill === c ? 'border-gray-900 scale-110 shadow-lg' : 'border-white hover:border-gray-100'}`}
-                                    style={{ backgroundColor: c }}
-                                />
-                            ))}
+                    {/* Colors (Dropdown) */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Color del Texto</label>
+                            <div className="relative">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: fill }} />
+                                <select value={fill} onChange={(e) => setFill(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all appearance-none"
+                                    style={{ color: fill === '#ffffff' ? '#000' : fill }}>
+                                    {COLORS.map((c) => (
+                                        <option key={c} value={c} style={{ color: c === '#ffffff' ? '#000' : c }}>
+                                            {c === '#ffffff' ? 'Blanco' : c === '#1a1a1a' ? 'Negro' : c === '#475569' ? 'Azul Plomo' : c === '#3B82F6' ? 'Azul' : c === '#FFD700' ? 'Dorado' : c === '#FF4500' ? 'Naranja' : c === '#32CD32' ? 'Verde' : 'Púrpura'}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Color de Fondo</label>
+                            <div className="relative">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: backgroundColor }} />
+                                <select value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all appearance-none">
+                                    {COLORS.map((c) => (
+                                        <option key={c} value={c}>
+                                            {c === '#ffffff' ? 'Blanco' : c === '#1a1a1a' ? 'Negro' : c === '#475569' ? 'Azul Plomo' : c === '#3B82F6' ? 'Azul' : c === '#FFD700' ? 'Dorado' : c === '#FF4500' ? 'Naranja' : c === '#32CD32' ? 'Verde' : 'Púrpura'}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     {/* Background Multi-word Style */}
-                    <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100">
-                        <label className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest">Estilo de Resaltado</label>
-                        <div className="flex gap-2 mb-4">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest">Estilo</label>
+                        <div className="flex gap-2">
                             <button
                                 onClick={() => setBackgroundStyle('none')}
                                 className={`flex-1 py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'none' ? 'bg-white border-gray-900 shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
@@ -152,28 +170,12 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                                 LIMPIO
                             </button>
                             <button
-                                onClick={() => setBackgroundStyle('per-word')}
+                                onClick={() => { setBackgroundStyle('per-word'); if (backgroundColor === '#475569') setBackgroundColor('#3B82F6'); }}
                                 className={`flex-1 py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'per-word' ? 'bg-white border-[var(--color-primary)] text-[var(--color-primary)] shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
                             >
                                 BURBUJAS ✨
                             </button>
                         </div>
-
-                        {backgroundStyle !== 'none' && (
-                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                <label className="block text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest">Color del Fondo</label>
-                                <div className="grid grid-cols-4 xs:grid-cols-8 gap-2">
-                                    {COLORS.map((c) => (
-                                        <button
-                                            key={c}
-                                            onClick={() => setBackgroundColor(c)}
-                                            className={`w-full aspect-square rounded-lg border-2 transition-all ${backgroundColor === c ? 'border-gray-900 scale-110 shadow-md' : 'border-transparent'}`}
-                                            style={{ backgroundColor: c }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
 

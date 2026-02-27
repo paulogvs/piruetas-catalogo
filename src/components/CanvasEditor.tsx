@@ -95,7 +95,7 @@ const StickerText = ({ sticker, isSelected, onSelect, onChange, onDoubleClick }:
                         const fontSize = shape.getAttr('fontSize');
                         const fontFamily = shape.getAttr('fontFamily');
                         const fill = shape.getAttr('fill');
-                        const bgColor = shape.getAttr('backgroundColor') || '#E91E8C';
+                        const bgColor = shape.getAttr('backgroundColor') || '#475569';
                         const align = shape.getAttr('align') || 'center';
 
                         context.font = `${fontSize}px ${fontFamily}`;

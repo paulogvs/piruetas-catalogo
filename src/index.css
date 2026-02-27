@@ -5,9 +5,11 @@
     --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
     --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
-    --color-primary: #E91E8C;
-    --color-primary-dark: #c4177a;
-    --color-bg: #F5F5F7;
+    --color-primary: #475569;
+    --color-primary-dark: #334155;
+    --color-bg: #F1F5F9;
+    --color-accent: #3B82F6;
+    --color-accent-dark: #2563EB;
     --color-canvas: #FFFFFF;
     --color-surface: #FFFFFF;
 }

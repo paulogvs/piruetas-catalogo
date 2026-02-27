@@ -266,7 +266,7 @@ export default function App() {
             {/* ── HEADER ── */}
             <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm z-10 flex-shrink-0">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-pink-300 rounded-xl flex items-center justify-center shadow-sm">
+                    <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-blue-300 rounded-xl flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-base font-serif italic">P</span>
                     </div>
                     <span className="font-bold text-base tracking-tight text-gray-900 hidden xs:block">PIRÜETAS <span className="text-[var(--color-primary)]">CON ESTILO</span></span>
@@ -330,14 +330,14 @@ export default function App() {
                 <div className="flex items-center gap-2 max-w-lg mx-auto pb-1">
                     {toolbarBtns.map((btn) => (
                         <button key={btn.label} onClick={btn.onClick}
-                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)]"
+                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)]"
                         >
                             {btn.icon}
                             <span className="text-xs sm:text-sm font-semibold">{btn.label}</span>
                         </button>
                     ))}
                     <button onClick={() => setIsDownloadModalOpen(true)}
-                        className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-pink-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95">
+                        className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95">
                         <Download className="w-5 h-5" />
                         <span className="text-xs sm:text-sm font-semibold">Guardar</span>
                     </button>

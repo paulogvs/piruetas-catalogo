@@ -26,7 +26,7 @@ export function FormatSelector({ isOpen, onClose, currentFormat, onSelectFormat 
                         key={key}
                         onClick={() => { onSelectFormat(key); onClose(); }}
                         className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${currentFormat === key
-                                ? 'border-[var(--color-primary)] bg-pink-50'
+                                ? 'border-[var(--color-primary)] bg-blue-50'
                                 : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                             }`}
                     >
