@@ -48,7 +48,7 @@ const StickerImage = ({ sticker, isSelected, onSelect, onChange }: any) => {
                         y: node.y(),
                         rotation: node.rotation(),
                         width: Math.max(5, node.width() * scaleX),
-                        height: Math.max(node.height() * scaleY),
+                        height: Math.max(5, node.height() * scaleY),
                     });
                 }}
             />
