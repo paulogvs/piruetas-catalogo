@@ -7,7 +7,7 @@ import { FormatSelector } from './components/FormatSelector';
 import { StickerData, FORMATS } from './types';
 import {
     ImagePlus, Type, Download, Trash2, Undo2, RotateCcw,
-    BringToFront, SendToBack, LayoutTemplate, Smile, Eye,
+    BringToFront, SendToBack, LayoutTemplate, Smile, Eye, Copy,
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -107,6 +107,22 @@ export default function App() {
         if (!selectedId) return;
         setStickers(s => s.filter(x => x.id !== selectedId));
         setSelectedId(null);
+    };
+
+    const handleDuplicateSelected = () => {
+        if (!selectedId) return;
+        const sticker = stickers.find(s => s.id === selectedId);
+        if (!sticker) return;
+
+        const newSticker: StickerData = {
+            ...sticker,
+            id: uuidv4(),
+            x: sticker.x + 20,
+            y: sticker.y + 20,
+        };
+
+        setStickers(prev => [...prev, newSticker]);
+        setSelectedId(newSticker.id);
     };
 
     // Keyboard shortcuts
@@ -321,6 +337,12 @@ export default function App() {
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
                             title="Enviar atrás">
                             <SendToBack className="w-4 h-4" /> <span className="hidden sm:inline">Atrás</span>
+                        </button>
+                        <div className="w-px h-5 bg-gray-200" />
+                        <button onClick={handleDuplicateSelected}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                            title="Duplicar">
+                            <Copy className="w-4 h-4" /> <span className="hidden sm:inline">Duplicar</span>
                         </button>
                         <div className="w-px h-5 bg-gray-200" />
                         <button onClick={handleDeleteSelected}

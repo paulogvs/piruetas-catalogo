@@ -48,7 +48,7 @@ const StickerImage = ({ sticker, isSelected, onSelect, onChange }: any) => {
                         y: node.y(),
                         rotation: node.rotation(),
                         width: Math.max(5, node.width() * scaleX),
-                        height: Math.max(node.height() * scaleY),
+                        height: Math.max(5, node.height() * scaleY),
                     });
                 }}
             />
@@ -343,7 +343,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                             const newRotation = touchRef.current.initialRotation + angleDiff;
 
                             // Apply changes
-                            const newStickers = stickers.map(s => {
+                            setStickers(prev => prev.map(s => {
                                 if (s.id === selectedId) {
                                     return {
                                         ...s,
@@ -353,9 +353,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                                     };
                                 }
                                 return s;
-                            });
-
-                            setStickers(newStickers);
+                            }));
                         }
                     }}
                     onTouchEnd={(e) => {

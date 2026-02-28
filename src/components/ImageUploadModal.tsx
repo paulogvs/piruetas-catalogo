@@ -3,7 +3,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import Cropper from 'react-easy-crop';
 import { Upload, Scissors } from 'lucide-react';
-import { removeBackground } from '@imgly/background-removal';
+import { removeBackgroundLocal } from '../utils/imageUtils';
 
 interface ImageUploadModalProps {
     isOpen: boolean;
@@ -87,14 +87,15 @@ export function ImageUploadModal({ isOpen, onClose, onAddImage }: ImageUploadMod
         setProcessingLabel('Quitando fondo… (puede tardar unos segundos)');
         try {
             const croppedImage = await getCroppedImg();
-            const blob = await (await fetch(croppedImage)).blob();
-            const resultBlob = await removeBackground(blob);
-            const reader = new FileReader();
-            reader.readAsDataURL(resultBlob);
-            reader.onloadend = () => {
-                onAddImage(reader.result as string);
-                onClose();
-            };
+            const dataUrl = await removeBackgroundLocal(croppedImage, (key, current, total) => {
+                if (key === 'loading_model') {
+                    setProcessingLabel(`Cargando modelo de IA: ${Math.round(current)}%`);
+                } else {
+                    setProcessingLabel('Procesando imagen...');
+                }
+            });
+            onAddImage(dataUrl);
+            onClose();
         } catch (error) {
             console.error(error);
             alert('Error quitando el fondo. Intenta con otra imagen.');
