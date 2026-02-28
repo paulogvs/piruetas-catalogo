@@ -50,6 +50,7 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
     });
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessingBg, setIsProcessingBg] = useState(false);
+    const [processingLabel, setProcessingLabel] = useState('Sin Fondo');
     const [showApiSettings, setShowApiSettings] = useState(false);
     const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE) || '');
     const [bgMethod, setBgMethod] = useState<'local' | 'api'>('local');
@@ -128,10 +129,17 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
             const savedApiKey = localStorage.getItem(API_KEY_STORAGE);
             if (savedApiKey && bgMethod === 'api') {
                 // Use Poof API (faster, more reliable)
+                setProcessingLabel('Procesando...');
                 src = await removeBackgroundPoof(file, savedApiKey);
             } else {
-                // Use local @imgly (free but slower)
-                src = await removeBackgroundLocal(file);
+                // Use local Transformers.js (free and improved)
+                src = await removeBackgroundLocal(file, (key, current, total) => {
+                    if (key === 'loading_model') {
+                        setProcessingLabel(`Cargando ${Math.round(current)}%`);
+                    } else {
+                        setProcessingLabel('Procesando...');
+                    }
+                });
             }
             
             const newBrand = {
@@ -179,8 +187,8 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
                             className="flex-1"
                             isLoading={isProcessingBg}
                         >
-                            <Sparkles className="w-4 h-4 mr-1.5" />
-                            Sin Fondo
+                            {!isProcessingBg && <Sparkles className="w-4 h-4 mr-1.5" />}
+                            {isProcessingBg ? processingLabel : 'Sin Fondo'}
                         </Button>
                     </div>
                     <input

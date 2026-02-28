@@ -87,7 +87,13 @@ export function ImageUploadModal({ isOpen, onClose, onAddImage }: ImageUploadMod
         setProcessingLabel('Quitando fondo… (puede tardar unos segundos)');
         try {
             const croppedImage = await getCroppedImg();
-            const dataUrl = await removeBackgroundLocal(croppedImage);
+            const dataUrl = await removeBackgroundLocal(croppedImage, (key, current, total) => {
+                if (key === 'loading_model') {
+                    setProcessingLabel(`Cargando modelo de IA: ${Math.round(current)}%`);
+                } else {
+                    setProcessingLabel('Procesando imagen...');
+                }
+            });
             onAddImage(dataUrl);
             onClose();
         } catch (error) {
