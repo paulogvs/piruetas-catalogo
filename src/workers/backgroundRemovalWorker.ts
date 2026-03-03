@@ -12,6 +12,7 @@ self.onmessage = async (event: MessageEvent) => {
 
     if (type === 'init') {
         try {
+            console.log('[Worker]: Initializing model...');
             self.postMessage({ type: 'status', status: 'loading', message: 'Cargando modelo de IA...', progress: 0 });
 
             remover = await pipeline('image-segmentation', model || 'onnx-community/RMBG-1.4', {
@@ -30,59 +31,46 @@ self.onmessage = async (event: MessageEvent) => {
                 }
             });
 
+            console.log('[Worker]: Model ready.');
             self.postMessage({ type: 'status', status: 'ready', message: 'Modelo listo' });
         } catch (error: any) {
-            console.error('Error loading model:', error);
+            console.error('[Worker]: Error loading model:', error);
             self.postMessage({ type: 'error', message: 'Error al cargar el modelo de IA: ' + error.message });
         }
     }
 
     if (type === 'remove_bg' && image) {
         if (!remover) {
-            self.postMessage({ type: 'error', message: 'El modelo no está cargado.' });
+            console.warn('[Worker]: remove_bg requested but model not ready.');
+            self.postMessage({ type: 'error', message: 'El modelo no está cargado todavía.' });
             return;
         }
 
         try {
+            console.log('[Worker]: Processing image background removal...');
             self.postMessage({ type: 'status', status: 'processing', message: 'Analizando imagen...' });
 
-            // Load and process image
-            // Note: convert to RGBA to ensure it works with ImageData
-            const img = (await RawImage.fromURL(image)).rgba();
+            // Load image
+            const img = await RawImage.fromURL(image);
 
             // Generate mask
             const results = await remover(img);
             const output = Array.isArray(results) ? results[0] : results;
 
-            // Create a temporary canvas to apply the mask
-            const canvas = new OffscreenCanvas(img.width, img.height);
-            const ctx = canvas.getContext('2d');
-            if (!ctx) throw new Error('Could not get OffscreenCanvas context');
-
-            // Reconstruct image data correctly (now RGBA)
-            const imageData = new ImageData(new Uint8ClampedArray(img.data), img.width, img.height);
-            ctx.putImageData(imageData, 0, 0);
-
-            // Get mask data
-            const maskData = output.mask.data; // uint8 array 0-255 (1 channel)
-
-            const processedImageData = ctx.getImageData(0, 0, img.width, img.height);
-            for (let i = 0; i < maskData.length; ++i) {
-                // Apply the mask to the alpha channel
-                processedImageData.data[i * 4 + 3] = maskData[i];
+            if (!output || !output.mask) {
+                throw new Error('No se pudo generar la máscara de fondo.');
             }
 
-            ctx.putImageData(processedImageData, 0, 0);
-
-            // Convert to blob and send back
-            const blob = await canvas.convertToBlob({ type: 'image/png' });
+            // Send back the mask data and original image dimensions
+            // We use transferable objects for performance
+            const maskData = output.mask.data; // Uint8Array
 
             self.postMessage({
                 type: 'result',
-                blob: blob,
-                width: img.width,
-                height: img.height
-            });
+                mask: maskData,
+                width: output.mask.width,
+                height: output.mask.height
+            }, { transfer: [maskData.buffer] } as any);
         } catch (error: any) {
             console.error('Error processing image:', error);
             self.postMessage({ type: 'error', message: 'Error al procesar la imagen: ' + error.message });
