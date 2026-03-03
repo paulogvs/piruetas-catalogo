@@ -27,18 +27,28 @@ body {
     touch-action: manipulation;
 }
 
-/* Prevent pull-to-refresh on mobile */
-html,
+/* Prevent pull-to-refresh on mobile and ensure full height */
+html {
+    overflow: hidden;
+    height: -webkit-fill-available;
+}
+
 body {
     overflow: hidden;
-    height: 100%;
+    height: 100vh;
     height: 100dvh;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    height: -webkit-fill-available;
+    background-color: var(--color-bg);
+    color: #1a1a1a;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    /* We handle safe areas in the App container to avoid double padding */
 }
 
 #root {
     height: 100%;
-    height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Smooth animations */

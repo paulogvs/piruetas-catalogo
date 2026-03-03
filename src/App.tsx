@@ -284,10 +284,10 @@ export default function App() {
     ];
 
     return (
-        <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none pb-safe">
+        <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none">
 
             {/* ── HEADER ── */}
-            <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm z-10 flex-shrink-0 pt-safe">
+            <header className="flex items-center justify-between px-4 py-2.5 sm:py-3 bg-white shadow-sm z-10 flex-shrink-0 pt-safe px-safe">
                 <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-blue-300 rounded-xl flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-base font-serif italic">P</span>
@@ -314,7 +314,7 @@ export default function App() {
             </header>
 
             {/* ── CANVAS AREA ── */}
-            <main className="flex-1 relative overflow-hidden p-3 sm:p-6 flex items-center justify-center min-h-0">
+            <main className="flex-1 relative overflow-hidden p-2 sm:p-4 flex items-center justify-center min-h-0">
                 <CanvasEditor
                     stickers={stickers}
                     setStickers={setStickers}
@@ -355,20 +355,20 @@ export default function App() {
             </main>
 
             {/* ── BOTTOM TOOLBAR ── */}
-            <footer className="bg-white border-t border-gray-100 shadow-[0_-2px_20px_rgba(0,0,0,0.06)] px-4 pb-safe pt-3 flex-shrink-0">
-                <div className="flex items-center gap-2 max-w-lg mx-auto pb-1">
+            <footer className="bg-white border-t border-gray-100 shadow-[0_-2px_20px_rgba(0,0,0,0.06)] px-4 pb-safe pt-3 flex-shrink-0 px-safe">
+                <div className="flex items-center gap-2 max-w-xl mx-auto">
                     {toolbarBtns.map((btn) => (
                         <button key={btn.label} onClick={btn.onClick}
-                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)]"
+                            className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)] overflow-hidden"
                         >
-                            {btn.icon}
-                            <span className="text-xs sm:text-sm font-semibold">{btn.label}</span>
+                            <div className="flex-shrink-0">{btn.icon}</div>
+                            <span className="text-[10px] sm:text-xs font-bold whitespace-nowrap">{btn.label}</span>
                         </button>
                     ))}
                     <button onClick={() => setIsDownloadModalOpen(true)}
-                        className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95">
+                        className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95 overflow-hidden">
                         <Download className="w-5 h-5" />
-                        <span className="text-xs sm:text-sm font-semibold">Guardar</span>
+                        <span className="text-[10px] sm:text-xs font-bold">Guardar</span>
                     </button>
                 </div>
             </footer>

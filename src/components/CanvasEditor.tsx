@@ -235,16 +235,25 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
     useEffect(() => {
         const updateScale = () => {
             if (containerRef.current) {
-                const containerWidth = containerRef.current.offsetWidth;
-                const containerHeight = containerRef.current.offsetHeight;
+                // We leave a small margin (e.g., 24px) for aesthetics and to avoid touching edges
+                const margin = 16;
+                const containerWidth = containerRef.current.offsetWidth - (margin * 2);
+                const containerHeight = containerRef.current.offsetHeight - (margin * 2);
                 const scaleX = containerWidth / canvasSize.width;
                 const scaleY = containerHeight / canvasSize.height;
-                setScale(Math.min(scaleX, scaleY, 1));
+                // Never go above 1:1, but scale down as much as needed
+                setScale(Math.max(0.1, Math.min(scaleX, scaleY, 1)));
             }
         };
         updateScale();
+        // Use ResizeObserver for more reliable updates than just 'resize' event
+        const observer = new ResizeObserver(updateScale);
+        if (containerRef.current) observer.observe(containerRef.current);
         window.addEventListener('resize', updateScale);
-        return () => window.removeEventListener('resize', updateScale);
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('resize', updateScale);
+        };
     }, [canvasSize]);
 
     const checkDeselect = (e: any) => {
