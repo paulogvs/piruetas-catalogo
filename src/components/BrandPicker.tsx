@@ -251,7 +251,7 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
                                         onChange={() => setBgMethod('local')}
                                         className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300"
                                     />
-                                    <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900">Local (@imgly) · Gratis y offline</span>
+                                    <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900">Local (Ligero) · Gratis y offline</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer group">
                                     <input

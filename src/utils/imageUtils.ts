@@ -143,13 +143,14 @@ export async function removeBackgroundLocal(
     let isObjectUrl = false;
 
     // Optimization: Resize image before sending to worker to save memory
+    // Reduced to 800px for maximum mobile compatibility
     if (typeof source !== 'string') {
-        finalImageUrl = await resizeImage(source, 1024);
+        finalImageUrl = await resizeImage(source, 800);
         isObjectUrl = true;
     } else if (source.startsWith('data:')) {
         // If it's a data URL, also resize it
         const blob = await (await fetch(source)).blob();
-        finalImageUrl = await resizeImage(blob, 1024);
+        finalImageUrl = await resizeImage(blob, 800);
         isObjectUrl = true;
     } else {
         finalImageUrl = source;

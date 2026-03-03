@@ -13,12 +13,10 @@ self.onmessage = async (event: MessageEvent) => {
     if (type === 'init') {
         try {
             console.log('[Worker]: Initializing model...');
-            self.postMessage({ type: 'status', status: 'loading', message: 'Cargando modelo de IA...', progress: 0 });
+            self.postMessage({ type: 'status', status: 'loading', message: 'Cargando procesador ligero...', progress: 0 });
 
-            remover = await pipeline('image-segmentation', model || 'onnx-community/RMBG-1.4', {
-                // Auto-detect best device (WebGPU > WASM)
-                // Using q8 quantization for best balance of quality and mobile compatibility
-                dtype: 'q8',
+            // Switching to Xenova/modnet (~12MB) for best mobile compatibility
+            remover = await pipeline('image-segmentation', model || 'Xenova/modnet', {
                 progress_callback: (p: any) => {
                     if (p.status === 'progress') {
                         self.postMessage({
