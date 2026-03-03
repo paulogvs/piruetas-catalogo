@@ -12,7 +12,7 @@ interface TextConfigModalProps {
     canvasSize: { width: number; height: number };
 }
 
-const FONTS = ['Comic Neue', 'Outfit', 'Playfair Display', 'Bebas Neue', 'Lobster', 'Montserrat'];
+const FONTS = ['Outfit', 'Comic Neue', 'Playfair Display', 'Bebas Neue', 'Lobster', 'Montserrat'];
 const COLORS = [
     '#ffffff', // Blanco
     '#1a1a1a', // Negro
@@ -26,7 +26,7 @@ const COLORS = [
 
 export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, canvasSize }: TextConfigModalProps) {
     const [text, setText] = useState('');
-    const [fontFamily, setFontFamily] = useState('Comic Neue');
+    const [fontFamily, setFontFamily] = useState('Outfit');
     const [fontSize, setFontSize] = useState(80);
     const [fill, setFill] = useState('#1a1a1a');
     const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word'>('none');
@@ -42,7 +42,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setBackgroundColor(editingSticker.backgroundColor || '#475569');
         } else {
             setText('');
-            setFontFamily('Comic Neue');
+            setFontFamily('Outfit');
             setFontSize(80);
             setFill('#1a1a1a');
             setBackgroundStyle('none');

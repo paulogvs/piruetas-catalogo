@@ -14,9 +14,10 @@ self.onmessage = async (event: MessageEvent) => {
         try {
             self.postMessage({ type: 'status', status: 'loading', message: 'Cargando modelo de IA...', progress: 0 });
 
-            remover = await pipeline('image-segmentation', model || 'briaai/RMBG-1.4', {
-                device: 'webgpu', // Try WebGPU if available
-                dtype: 'fp16', // Use fp16 for better performance on mobile
+            remover = await pipeline('image-segmentation', model || 'onnx-community/RMBG-1.4', {
+                // Auto-detect best device (WebGPU > WASM)
+                // Using q8 quantization for best balance of quality and mobile compatibility
+                dtype: 'q8',
                 progress_callback: (p: any) => {
                     if (p.status === 'progress') {
                         self.postMessage({
@@ -50,7 +51,8 @@ self.onmessage = async (event: MessageEvent) => {
             const img = (await RawImage.fromURL(image)).rgba();
 
             // Generate mask
-            const output = await remover(img);
+            const results = await remover(img);
+            const output = Array.isArray(results) ? results[0] : results;
 
             // Create a temporary canvas to apply the mask
             const canvas = new OffscreenCanvas(img.width, img.height);

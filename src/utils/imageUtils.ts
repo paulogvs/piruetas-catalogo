@@ -3,6 +3,8 @@ let backgroundRemovalWorker: Worker | null = null;
 let currentResolve: ((value: string) => void) | null = null;
 let currentReject: ((reason: any) => void) | null = null;
 let progressCallback: ((key: string, current: number, total: number) => void) | null = null;
+let isWorkerReady = false;
+let pendingRequest: any = null;
 
 /**
  * Initializes the background removal worker.
@@ -20,6 +22,15 @@ function initWorker() {
 
         if (type === 'status') {
             console.log(`[Worker Status]: ${status} - ${message}`);
+
+            if (status === 'ready') {
+                isWorkerReady = true;
+                if (pendingRequest) {
+                    backgroundRemovalWorker!.postMessage(pendingRequest);
+                    pendingRequest = null;
+                }
+            }
+
             // Map status to progress for simple progress callback
             if (status === 'loading' && progress !== undefined && progressCallback) {
                 progressCallback('loading_model', progress, 100);
@@ -49,7 +60,8 @@ function initWorker() {
         }
 
         if (type === 'error' && currentReject) {
-            currentReject(new Error(error || message || 'Unknown worker error'));
+            console.error('[Worker Error Payload]:', event.data);
+            currentReject(new Error(error || message || 'Error interno del procesador de imágenes.'));
             currentResolve = null;
             currentReject = null;
 
@@ -109,14 +121,21 @@ export async function removeBackgroundLocal(
         currentResolve = resolve;
         currentReject = reject;
 
+        const payload = {
+            type: 'remove_bg',
+            image: imageUrl
+        };
+
         // Store for cleanup
         if (isObjectUrl) {
             (backgroundRemovalWorker as any).lastImageUrl = imageUrl;
         }
 
-        backgroundRemovalWorker!.postMessage({
-            type: 'remove_bg',
-            image: imageUrl
-        });
+        if (isWorkerReady) {
+            backgroundRemovalWorker!.postMessage(payload);
+        } else {
+            console.log('[Worker Utility]: Model not ready, queuing request...');
+            pendingRequest = payload;
+        }
     });
 }
