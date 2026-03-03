@@ -104,14 +104,35 @@ async function applyMask(maskData: Uint8Array, width: number, height: number): P
             const ctx = canvas.getContext('2d');
             if (!ctx) return reject(new Error('Canvas context failed'));
 
-            // Draw original image resized to mask dimensions
+            // 1. Create a mask canvas to apply feathering
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = width;
+            maskCanvas.height = height;
+            const mCtx = maskCanvas.getContext('2d');
+            if (!mCtx) return reject(new Error('Mask canvas context failed'));
+
+            const maskImageData = mCtx.createImageData(width, height);
+            for (let i = 0; i < maskData.length; i++) {
+                const val = maskData[i];
+                maskImageData.data[i * 4] = val;
+                maskImageData.data[i * 4 + 1] = val;
+                maskImageData.data[i * 4 + 2] = val;
+                maskImageData.data[i * 4 + 3] = 255;
+            }
+            mCtx.putImageData(maskImageData, 0, 0);
+
+            // 2. Final composition
+            // Draw original image
             ctx.drawImage(img, 0, 0, width, height);
 
-            const imageData = ctx.getImageData(0, 0, width, height);
-            for (let i = 0; i < maskData.length; i++) {
-                imageData.data[i * 4 + 3] = maskData[i];
-            }
-            ctx.putImageData(imageData, 0, 0);
+            // Apply feathered mask using globalCompositeOperation
+            ctx.globalCompositeOperation = 'destination-in';
+
+            // Subtle blur for edge feathering (makes it look more professional/natural)
+            ctx.filter = 'blur(1.5px)';
+            ctx.drawImage(maskCanvas, 0, 0);
+            ctx.filter = 'none';
+
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = () => reject(new Error('Failed to load original image for masking'));

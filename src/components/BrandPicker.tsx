@@ -167,27 +167,27 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Logos de Marca">
-            <div className="space-y-4">
+        <Modal isOpen={isOpen} onClose={onClose} title="Librería de Marcas">
+            <div className="space-y-5">
                 {/* Upload Section */}
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Subir logo de marca</h4>
+                <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10">
+                    <h4 className="font-black text-gray-900 mb-4 text-[11px] uppercase tracking-widest text-center">Importar Identidad</h4>
                     <div className="flex gap-3">
                         <Button
                             onClick={() => fileInputRef.current?.click()}
-                            variant="secondary"
-                            className="flex-1"
+                            variant="outline"
+                            className="flex-1 py-6 bg-white"
                             isLoading={isUploading && !isProcessingBg}
                         >
-                            <Upload className="w-4 h-4 mr-1.5" />
+                            <Upload className="w-4 h-4 mr-2" />
                             Logo
                         </Button>
                         <Button
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex-1"
+                            className="flex-1 py-6"
                             isLoading={isProcessingBg}
                         >
-                            {!isProcessingBg && <Sparkles className="w-4 h-4 mr-1.5" />}
+                            {!isProcessingBg && <Sparkles className="w-4 h-4 mr-2 text-gold-light" />}
                             {isProcessingBg ? processingLabel : 'Sin Fondo'}
                         </Button>
                     </div>
@@ -202,26 +202,26 @@ export function BrandPicker({ isOpen, onClose, onAddBrand, canvasSize }: BrandPi
 
                 {/* Saved Logos */}
                 {customBrands.length > 0 && (
-                    <div>
-                        <h4 className="font-bold text-gray-400 mb-3 text-[10px] uppercase tracking-widest">Tus logos guardados</h4>
-                        <div className="grid grid-cols-4 gap-3">
+                    <div className="pt-2">
+                        <h4 className="font-bold text-gray-400 mb-4 text-[10px] uppercase tracking-[0.2em] text-center italic">Mis Activos Digitales</h4>
+                        <div className="grid grid-cols-4 gap-4">
                             {customBrands.map((brand) => (
                                 <div key={brand.id} className="relative group animate-fade-in-up">
                                     <button
                                         onClick={() => handleAddCustomImage(brand.src)}
-                                        className="w-full aspect-square rounded-xl border-2 border-gray-100 hover:border-[var(--color-primary)] transition-all overflow-hidden flex items-center justify-center bg-gray-50 shadow-sm"
+                                        className="w-full aspect-square rounded-2xl border-2 border-gray-50 hover:border-primary transition-all overflow-hidden flex items-center justify-center bg-white shadow-sm hover:shadow-xl active:scale-95"
                                     >
                                         <img
                                             src={brand.src}
                                             alt={brand.name}
-                                            className={`w-full h-full p-1 ${brand.src.startsWith('data:image/png') ? 'object-contain' : 'object-cover'}`}
+                                            className={`w-full h-full p-1.5 ${brand.src.startsWith('data:image/png') ? 'object-contain' : 'object-cover'}`}
                                         />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteCustomBrand(brand.id)}
-                                        className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                        className="absolute -top-1.5 -right-1.5 w-7 h-7 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl z-10 scale-75 group-hover:scale-100"
                                     >
-                                        <X className="w-3 h-3" />
+                                        <X className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
                             ))}

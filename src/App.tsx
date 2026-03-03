@@ -287,12 +287,15 @@ export default function App() {
         <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none">
 
             {/* ── HEADER ── */}
-            <header className="flex items-center justify-between px-4 py-2.5 sm:py-3 bg-white shadow-sm z-10 flex-shrink-0 pt-safe px-safe">
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10 flex-shrink-0 pt-safe px-safe">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-blue-300 rounded-xl flex items-center justify-center shadow-sm">
-                        <span className="text-white font-bold text-base font-serif italic">P</span>
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-md">
+                        <span className="text-white font-bold text-xl font-serif italic">P</span>
                     </div>
-                    <span className="font-bold text-base tracking-tight text-gray-900 hidden xs:block">PIRÜETAS <span className="text-[var(--color-primary)]">CON ESTILO</span></span>
+                    <div className="flex flex-col -gap-1 hidden xs:flex">
+                        <span className="font-black text-sm tracking-[0.25em] text-gray-900 leading-none">PIRÜETAS</span>
+                        <span className="font-medium text-[10px] tracking-[0.1em] text-gray-400 uppercase">Estudio Editorial</span>
+                    </div>
                 </div>
                 <div className="flex items-center gap-1">
                     <button onClick={handleUndo} disabled={historyStep === 0}
@@ -355,20 +358,20 @@ export default function App() {
             </main>
 
             {/* ── BOTTOM TOOLBAR ── */}
-            <footer className="bg-white border-t border-gray-100 shadow-[0_-2px_20px_rgba(0,0,0,0.06)] px-4 pb-safe pt-3 flex-shrink-0 px-safe">
-                <div className="flex items-center gap-2 max-w-xl mx-auto">
+            <footer className="bg-white border-t border-gray-100 px-4 pb-safe pt-3 flex-shrink-0 px-safe">
+                <div className="flex items-center gap-2.5 max-w-2xl mx-auto">
                     {toolbarBtns.map((btn) => (
                         <button key={btn.label} onClick={btn.onClick}
-                            className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)] overflow-hidden"
+                            className="flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:border-gray-300 hover:shadow-sm transition-all duration-300 text-gray-500 hover:text-primary active:scale-95"
                         >
-                            <div className="flex-shrink-0">{btn.icon}</div>
-                            <span className="text-[10px] sm:text-xs font-bold whitespace-nowrap">{btn.label}</span>
+                            <div className="flex-shrink-0 scale-90">{btn.icon}</div>
+                            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-wider">{btn.label}</span>
                         </button>
                     ))}
                     <button onClick={() => setIsDownloadModalOpen(true)}
-                        className="flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95 overflow-hidden">
-                        <Download className="w-5 h-5" />
-                        <span className="text-[10px] sm:text-xs font-bold">Guardar</span>
+                        className="flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-primary text-white shadow-xl hover:bg-black transition-all active:scale-95">
+                        <Download className="w-4.5 h-4.5" />
+                        <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest">Guardar</span>
                     </button>
                 </div>
             </footer>

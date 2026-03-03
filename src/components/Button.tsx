@@ -20,9 +20,9 @@ export function Button({
     const base = 'inline-flex items-center justify-center font-semibold rounded-2xl transition-all focus:outline-none active:scale-95 disabled:opacity-50 disabled:pointer-events-none';
 
     const variants = {
-        primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white shadow-sm',
-        secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800',
-        outline: 'border-2 border-gray-200 hover:border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
+        primary: 'bg-primary hover:bg-black text-white shadow-xl hover:shadow-2xl active:shadow-inner',
+        secondary: 'bg-gray-900 hover:bg-black text-white',
+        outline: 'border-2 border-gray-100 hover:border-gray-900 bg-white text-gray-900 hover:text-white hover:bg-gray-900',
         ghost: 'bg-transparent hover:bg-gray-100 text-gray-600',
         danger: 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200',
     };
