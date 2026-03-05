@@ -31,13 +31,15 @@ export function DownloadOptions({ isOpen, onClose, onDownload, currentFormat }: 
                         <button
                             key={opt.label}
                             onClick={() => { onDownload(opt.w, opt.h); onClose(); }}
-                            className="flex items-center justify-between p-4 rounded-2xl border-2 border-gray-200 hover:border-[var(--color-primary)] hover:bg-blue-50 transition-all group"
+                            className="flex items-center justify-between p-5 rounded-[1.5rem] border-2 border-gray-100 hover:border-primary hover:bg-primary/5 transition-all group active:scale-95"
                         >
                             <div className="text-left">
-                                <p className="font-semibold text-gray-800 group-hover:text-[var(--color-primary)]">{opt.label}</p>
-                                <p className="text-xs text-gray-400">{(opt.w * opt.h / 1_000_000).toFixed(1)} MP</p>
+                                <p className="font-bold text-gray-900 group-hover:text-primary">{opt.label}</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{(opt.w * opt.h / 1_000_000).toFixed(1)} Megapíxeles</p>
                             </div>
-                            <Download className="w-5 h-5 text-gray-400 group-hover:text-[var(--color-primary)]" />
+                            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                <Download className="w-5 h-5" />
+                            </div>
                         </button>
                     ))}
                 </div>

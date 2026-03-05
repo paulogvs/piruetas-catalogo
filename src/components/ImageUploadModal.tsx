@@ -3,7 +3,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import Cropper from 'react-easy-crop';
 import { Upload, Scissors } from 'lucide-react';
-import { removeBackground } from '@imgly/background-removal';
+import { removeBackgroundLocal } from '../utils/imageUtils';
 
 interface ImageUploadModalProps {
     isOpen: boolean;
@@ -87,14 +87,15 @@ export function ImageUploadModal({ isOpen, onClose, onAddImage }: ImageUploadMod
         setProcessingLabel('Quitando fondo… (puede tardar unos segundos)');
         try {
             const croppedImage = await getCroppedImg();
-            const blob = await (await fetch(croppedImage)).blob();
-            const resultBlob = await removeBackground(blob);
-            const reader = new FileReader();
-            reader.readAsDataURL(resultBlob);
-            reader.onloadend = () => {
-                onAddImage(reader.result as string);
-                onClose();
-            };
+            const dataUrl = await removeBackgroundLocal(croppedImage, (key, current, total) => {
+                if (key === 'loading_model') {
+                    setProcessingLabel(`Cargando modelo de IA: ${Math.round(current)}%`);
+                } else {
+                    setProcessingLabel('Procesando imagen...');
+                }
+            });
+            onAddImage(dataUrl);
+            onClose();
         } catch (error) {
             console.error(error);
             alert('Error quitando el fondo. Intenta con otra imagen.');
@@ -116,21 +117,21 @@ export function ImageUploadModal({ isOpen, onClose, onAddImage }: ImageUploadMod
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Añadir Imagen" maxWidth="max-w-2xl">
+        <Modal isOpen={isOpen} onClose={onClose} title="Añadir Fotografía" maxWidth="max-w-2xl">
             {!imageSrc ? (
                 <div
-                    className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 cursor-pointer"
+                    className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-gray-100 rounded-[2rem] bg-gray-50 hover:bg-white hover:border-primary transition-all cursor-pointer group"
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
                     onClick={() => document.getElementById('image-upload')?.click()}
                 >
-                    <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-4">
-                        <Upload className="w-8 h-8 text-[var(--color-primary)]" />
+                    <div className="w-20 h-20 bg-white shadow-xl rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                        <Upload className="w-8 h-8 text-primary" />
                     </div>
-                    <p className="text-gray-600 text-center font-medium mb-1">Arrastra una imagen aquí</p>
-                    <p className="text-gray-400 text-sm text-center">o pega desde el portapapeles (Ctrl+V) · JPG, PNG, WEBP</p>
+                    <p className="text-gray-900 text-center font-black uppercase tracking-widest text-sm mb-2">Sube tu Imagen</p>
+                    <p className="text-gray-400 text-xs text-center font-medium">ARRASRA O PEGA (CTRL+V) · JPG, PNG, WEBP</p>
                     <input type="file" accept="image/*" onChange={onFileChange} className="hidden" id="image-upload" />
-                    <Button variant="outline" size="md" className="mt-6">Seleccionar archivo</Button>
+                    <Button variant="outline" size="md" className="mt-8 border-gray-200 px-10">Explorar archivos</Button>
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">
@@ -150,12 +151,12 @@ export function ImageUploadModal({ isOpen, onClose, onAddImage }: ImageUploadMod
                         <div className="text-center text-sm text-gray-500 animate-pulse py-2">{processingLabel}</div>
                     )}
 
-                    <div className="flex gap-3">
-                        <Button onClick={handleRemoveBg} isLoading={isProcessing} variant="secondary" className="flex-1">
-                            ✨ Quitar Fondo
+                    <div className="flex gap-3 pt-2">
+                        <Button onClick={handleRemoveBg} isLoading={isProcessing} variant="primary" className="flex-1 py-7">
+                            {!isProcessing && <span className="mr-2">✨</span>} {isProcessing ? processingLabel : 'Quitar Fondo (IA)'}
                         </Button>
-                        <Button onClick={handleAddCropped} className="flex-1" disabled={isProcessing}>
-                            <Scissors className="w-4 h-4 mr-1" /> Añadir
+                        <Button onClick={handleAddCropped} className="flex-1 py-7" variant="outline" disabled={isProcessing}>
+                            <Scissors className="w-4 h-4 mr-2" /> Usar así
                         </Button>
                     </div>
 

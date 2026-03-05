@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Bebas+Neue&family=Lobster&family=Montserrat:wght@300;400;700&family=Comic+Neue:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @theme {
     --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
-    --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+    --font-serif: "Cormorant Garamond", "Playfair Display", ui-serif, Georgia, serif;
 
-    --color-primary: #475569;
-    --color-primary-dark: #334155;
-    --color-bg: #F1F5F9;
-    --color-accent: #3B82F6;
-    --color-accent-dark: #2563EB;
+    /* Premium Palette: Onyx, Gold, and Soft Slate */
+    --color-primary: #111827;
+    --color-primary-dark: #000000;
+    --color-bg: #F9FAFB;
+    --color-accent: #8B5CF6;
+    --color-accent-dark: #7C3AED;
+    --color-gold: #D4AF37;
+    --color-gold-light: #F3E5AB;
     --color-canvas: #FFFFFF;
     --color-surface: #FFFFFF;
 }
@@ -27,18 +30,28 @@ body {
     touch-action: manipulation;
 }
 
-/* Prevent pull-to-refresh on mobile */
-html,
+/* Prevent pull-to-refresh on mobile and ensure full height */
+html {
+    overflow: hidden;
+    height: -webkit-fill-available;
+}
+
 body {
     overflow: hidden;
-    height: 100%;
+    height: 100vh;
     height: 100dvh;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    height: -webkit-fill-available;
+    background-color: var(--color-bg);
+    color: #1a1a1a;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    /* We handle safe areas in the App container to avoid double padding */
 }
 
 #root {
     height: 100%;
-    height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Smooth animations */

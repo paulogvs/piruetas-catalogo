@@ -12,25 +12,25 @@ interface TextConfigModalProps {
     canvasSize: { width: number; height: number };
 }
 
-const FONTS = ['Comic Neue', 'Outfit', 'Playfair Display', 'Bebas Neue', 'Lobster', 'Montserrat'];
+const FONTS = ['Outfit', 'Cormorant Garamond', 'Playfair Display', 'Bebas Neue', 'Lobster', 'Montserrat', 'Comic Neue'];
 const COLORS = [
     '#ffffff', // Blanco
-    '#1a1a1a', // Negro
-    '#475569', // Azul Plomo
-    '#3B82F6', // Azul
-    '#FFD700', // Dorado
-    '#FF4500', // Naranja
-    '#32CD32', // Verde
-    '#9370DB', // Púrpura
+    '#111827', // Negro Onyx
+    '#D4AF37', // Oro Editorial
+    '#4B5563', // Gris Piedra
+    '#B91C1C', // Rojo Pasión
+    '#065F46', // Verde Esmeralda
+    '#1E40AF', // Azul Marino
+    '#7C3AED', // Violeta Real
 ];
 
 export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, canvasSize }: TextConfigModalProps) {
     const [text, setText] = useState('');
-    const [fontFamily, setFontFamily] = useState('Comic Neue');
+    const [fontFamily, setFontFamily] = useState('Outfit');
     const [fontSize, setFontSize] = useState(80);
     const [fill, setFill] = useState('#1a1a1a');
     const [backgroundStyle, setBackgroundStyle] = useState<'none' | 'per-word'>('none');
-    const [backgroundColor, setBackgroundColor] = useState('#475569');
+    const [backgroundColor, setBackgroundColor] = useState('#111827');
 
     useEffect(() => {
         if (editingSticker) {
@@ -39,14 +39,14 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
             setFontSize(editingSticker.fontSize || 80);
             setFill(editingSticker.fill || '#1a1a1a');
             setBackgroundStyle((editingSticker.backgroundStyle as 'none' | 'per-word') || 'none');
-            setBackgroundColor(editingSticker.backgroundColor || '#475569');
+            setBackgroundColor(editingSticker.backgroundColor || '#111827');
         } else {
             setText('');
-            setFontFamily('Comic Neue');
+            setFontFamily('Outfit');
             setFontSize(80);
-            setFill('#1a1a1a');
+            setFill('#111827');
             setBackgroundStyle('none');
-            setBackgroundColor('#475569');
+            setBackgroundColor('#111827');
         }
     }, [editingSticker, isOpen]);
 
@@ -137,7 +137,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                                     style={{ color: fill === '#ffffff' ? '#000' : fill }}>
                                     {COLORS.map((c) => (
                                         <option key={c} value={c} style={{ color: c === '#ffffff' ? '#000' : c }}>
-                                            {c === '#ffffff' ? 'Blanco' : c === '#1a1a1a' ? 'Negro' : c === '#475569' ? 'Azul Plomo' : c === '#3B82F6' ? 'Azul' : c === '#FFD700' ? 'Dorado' : c === '#FF4500' ? 'Naranja' : c === '#32CD32' ? 'Verde' : 'Púrpura'}
+                                            {c === '#ffffff' ? 'Blanco' : c === '#111827' ? 'Onyx' : c === '#D4AF37' ? 'Oro' : c === '#4B5563' ? 'Piedra' : c === '#B91C1C' ? 'Rojo' : c === '#065F46' ? 'Esmeralda' : c === '#1E40AF' ? 'Marino' : 'Violeta'}
                                         </option>
                                     ))}
                                 </select>
@@ -151,7 +151,7 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                                     className="w-full pl-10 pr-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-[var(--color-primary)] outline-none bg-white font-semibold transition-all appearance-none">
                                     {COLORS.map((c) => (
                                         <option key={c} value={c}>
-                                            {c === '#ffffff' ? 'Blanco' : c === '#1a1a1a' ? 'Negro' : c === '#475569' ? 'Azul Plomo' : c === '#3B82F6' ? 'Azul' : c === '#FFD700' ? 'Dorado' : c === '#FF4500' ? 'Naranja' : c === '#32CD32' ? 'Verde' : 'Púrpura'}
+                                            {c === '#ffffff' ? 'Blanco' : c === '#111827' ? 'Onyx' : c === '#D4AF37' ? 'Oro' : c === '#4B5563' ? 'Piedra' : c === '#B91C1C' ? 'Rojo' : c === '#065F46' ? 'Esmeralda' : c === '#1E40AF' ? 'Marino' : 'Violeta'}
                                         </option>
                                     ))}
                                 </select>
@@ -165,13 +165,13 @@ export function TextConfigModal({ isOpen, onClose, onAddText, editingSticker, ca
                         <div className="grid grid-cols-3 gap-2">
                             <button
                                 onClick={() => setBackgroundStyle('none')}
-                                className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'none' ? 'bg-white border-gray-900 shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
+                                className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'none' ? 'bg-white border-primary shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
                             >
                                 LIMPIO
                             </button>
                             <button
-                                onClick={() => { setBackgroundStyle('per-word'); if (backgroundColor === '#475569') setBackgroundColor('#3B82F6'); }}
-                                className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'per-word' ? 'bg-white border-[var(--color-primary)] text-[var(--color-primary)] shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
+                                onClick={() => { setBackgroundStyle('per-word'); if (backgroundColor === '#475569') setBackgroundColor('#111827'); }}
+                                className={`py-3 text-xs font-black rounded-xl border-2 transition-all ${backgroundStyle === 'per-word' ? 'bg-white border-primary text-primary shadow-sm translate-y-[-2px]' : 'bg-transparent border-transparent text-gray-400'}`}
                             >
                                 CAJA
                             </button>

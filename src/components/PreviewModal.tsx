@@ -94,7 +94,7 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
             console.warn('Failed to load image:', sticker.src);
             loadedCount++;
           };
-          imgObj.src = sticker.src;
+          imgObj.src = sticker.src || '';
         } else if (sticker.type === 'text') {
           const textGroup = new Konva.Group({
             x: sticker.x || 0,
@@ -137,13 +137,13 @@ export function PreviewModal({ stickers, format, isOpen, onClose }: PreviewModal
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 px-safe pb-safe pt-safe">
       <div 
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl max-h-[95vh] overflow-hidden flex flex-col animate-scaleIn">
+      <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl max-h-[92vh] overflow-hidden flex flex-col animate-scaleIn">
         <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Vista Previa</h3>
           <button 

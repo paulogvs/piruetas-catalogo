@@ -26,19 +26,19 @@ export function FormatSelector({ isOpen, onClose, currentFormat, onSelectFormat 
                         key={key}
                         onClick={() => { onSelectFormat(key); onClose(); }}
                         className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${currentFormat === key
-                                ? 'border-[var(--color-primary)] bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50'
                             }`}
                     >
-                        <span className="text-2xl">{ICONS[key]}</span>
+                        <span className="text-2xl grayscale">{ICONS[key]}</span>
                         <div>
-                            <p className={`font-semibold ${currentFormat === key ? 'text-[var(--color-primary)]' : 'text-gray-800'}`}>
+                            <p className={`font-bold ${currentFormat === key ? 'text-primary' : 'text-gray-800'}`}>
                                 {fmt.label}
                             </p>
-                            <p className="text-xs text-gray-400">{fmt.width} × {fmt.height} px</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">{fmt.width} × {fmt.height} px</p>
                         </div>
                         {currentFormat === key && (
-                            <span className="ml-auto text-[var(--color-primary)] font-bold text-sm">✓ Activo</span>
+                            <span className="ml-auto text-primary font-black text-xs uppercase tracking-widest">✓ Seleccionado</span>
                         )}
                     </button>
                 ))}

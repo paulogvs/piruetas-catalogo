@@ -7,7 +7,7 @@ import { FormatSelector } from './components/FormatSelector';
 import { StickerData, FORMATS } from './types';
 import {
     ImagePlus, Type, Download, Trash2, Undo2, RotateCcw,
-    BringToFront, SendToBack, LayoutTemplate, Smile, Eye,
+    BringToFront, SendToBack, LayoutTemplate, Smile, Eye, Copy,
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -107,6 +107,22 @@ export default function App() {
         if (!selectedId) return;
         setStickers(s => s.filter(x => x.id !== selectedId));
         setSelectedId(null);
+    };
+
+    const handleDuplicateSelected = () => {
+        if (!selectedId) return;
+        const sticker = stickers.find(s => s.id === selectedId);
+        if (!sticker) return;
+
+        const newSticker: StickerData = {
+            ...sticker,
+            id: uuidv4(),
+            x: sticker.x + 20,
+            y: sticker.y + 20,
+        };
+
+        setStickers(prev => [...prev, newSticker]);
+        setSelectedId(newSticker.id);
     };
 
     // Keyboard shortcuts
@@ -268,15 +284,18 @@ export default function App() {
     ];
 
     return (
-        <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none pb-safe">
+        <div className="flex flex-col h-screen h-[100dvh] bg-[var(--color-bg)] overflow-hidden select-none">
 
             {/* ── HEADER ── */}
-            <header className="flex items-center justify-between px-4 py-3 bg-white shadow-sm z-10 flex-shrink-0 pt-safe">
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10 flex-shrink-0 pt-safe px-safe">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-gradient-to-tr from-[var(--color-primary)] to-blue-300 rounded-xl flex items-center justify-center shadow-sm">
-                        <span className="text-white font-bold text-base font-serif italic">P</span>
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-md">
+                        <span className="text-white font-bold text-xl font-serif italic">P</span>
                     </div>
-                    <span className="font-bold text-base tracking-tight text-gray-900 hidden xs:block">PIRÜETAS <span className="text-[var(--color-primary)]">CON ESTILO</span></span>
+                    <div className="flex flex-col -gap-1 hidden xs:flex">
+                        <span className="font-black text-sm tracking-[0.25em] text-gray-900 leading-none">PIRÜETAS</span>
+                        <span className="font-medium text-[10px] tracking-[0.1em] text-gray-400 uppercase">Estudio Editorial</span>
+                    </div>
                 </div>
                 <div className="flex items-center gap-1">
                     <button onClick={handleUndo} disabled={historyStep === 0}
@@ -298,7 +317,7 @@ export default function App() {
             </header>
 
             {/* ── CANVAS AREA ── */}
-            <main className="flex-1 relative overflow-hidden p-3 sm:p-6 flex items-center justify-center min-h-0">
+            <main className="flex-1 relative overflow-hidden p-2 sm:p-4 flex items-center justify-center min-h-0">
                 <CanvasEditor
                     stickers={stickers}
                     setStickers={setStickers}
@@ -323,6 +342,12 @@ export default function App() {
                             <SendToBack className="w-4 h-4" /> <span className="hidden sm:inline">Atrás</span>
                         </button>
                         <div className="w-px h-5 bg-gray-200" />
+                        <button onClick={handleDuplicateSelected}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                            title="Duplicar">
+                            <Copy className="w-4 h-4" /> <span className="hidden sm:inline">Duplicar</span>
+                        </button>
+                        <div className="w-px h-5 bg-gray-200" />
                         <button onClick={handleDeleteSelected}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-red-500 hover:bg-red-50 transition-colors"
                             title="Eliminar">
@@ -333,20 +358,20 @@ export default function App() {
             </main>
 
             {/* ── BOTTOM TOOLBAR ── */}
-            <footer className="bg-white border-t border-gray-100 shadow-[0_-2px_20px_rgba(0,0,0,0.06)] px-4 pb-safe pt-3 flex-shrink-0">
-                <div className="flex items-center gap-2 max-w-lg mx-auto pb-1">
+            <footer className="bg-white border-t border-gray-100 px-4 pb-safe pt-3 flex-shrink-0 px-safe">
+                <div className="flex items-center gap-2.5 max-w-2xl mx-auto">
                     {toolbarBtns.map((btn) => (
                         <button key={btn.label} onClick={btn.onClick}
-                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-gray-600 hover:text-[var(--color-primary)]"
+                            className="flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:border-gray-300 hover:shadow-sm transition-all duration-300 text-gray-500 hover:text-primary active:scale-95"
                         >
-                            {btn.icon}
-                            <span className="text-xs sm:text-sm font-semibold">{btn.label}</span>
+                            <div className="flex-shrink-0 scale-90">{btn.icon}</div>
+                            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-wider">{btn.label}</span>
                         </button>
                     ))}
                     <button onClick={() => setIsDownloadModalOpen(true)}
-                        className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-blue-400 text-white shadow-md hover:shadow-lg transition-all active:scale-95">
-                        <Download className="w-5 h-5" />
-                        <span className="text-xs sm:text-sm font-semibold">Guardar</span>
+                        className="flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-primary text-white shadow-xl hover:bg-black transition-all active:scale-95">
+                        <Download className="w-4.5 h-4.5" />
+                        <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest">Guardar</span>
                     </button>
                 </div>
             </footer>

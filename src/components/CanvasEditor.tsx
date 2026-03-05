@@ -48,7 +48,7 @@ const StickerImage = ({ sticker, isSelected, onSelect, onChange }: any) => {
                         y: node.y(),
                         rotation: node.rotation(),
                         width: Math.max(5, node.width() * scaleX),
-                        height: Math.max(node.height() * scaleY),
+                        height: Math.max(5, node.height() * scaleY),
                     });
                 }}
             />
@@ -235,16 +235,25 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
     useEffect(() => {
         const updateScale = () => {
             if (containerRef.current) {
-                const containerWidth = containerRef.current.offsetWidth;
-                const containerHeight = containerRef.current.offsetHeight;
+                // We leave a small margin (e.g., 24px) for aesthetics and to avoid touching edges
+                const margin = 16;
+                const containerWidth = containerRef.current.offsetWidth - (margin * 2);
+                const containerHeight = containerRef.current.offsetHeight - (margin * 2);
                 const scaleX = containerWidth / canvasSize.width;
                 const scaleY = containerHeight / canvasSize.height;
-                setScale(Math.min(scaleX, scaleY, 1));
+                // Never go above 1:1, but scale down as much as needed
+                setScale(Math.max(0.1, Math.min(scaleX, scaleY, 1)));
             }
         };
         updateScale();
+        // Use ResizeObserver for more reliable updates than just 'resize' event
+        const observer = new ResizeObserver(updateScale);
+        if (containerRef.current) observer.observe(containerRef.current);
         window.addEventListener('resize', updateScale);
-        return () => window.removeEventListener('resize', updateScale);
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('resize', updateScale);
+        };
     }, [canvasSize]);
 
     const checkDeselect = (e: any) => {
@@ -343,7 +352,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                             const newRotation = touchRef.current.initialRotation + angleDiff;
 
                             // Apply changes
-                            const newStickers = stickers.map(s => {
+                            setStickers(prev => prev.map(s => {
                                 if (s.id === selectedId) {
                                     return {
                                         ...s,
@@ -353,9 +362,7 @@ export function CanvasEditor({ stickers, setStickers, selectedId, setSelectedId,
                                     };
                                 }
                                 return s;
-                            });
-
-                            setStickers(newStickers);
+                            }));
                         }
                     }}
                     onTouchEnd={(e) => {

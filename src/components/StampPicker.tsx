@@ -20,14 +20,14 @@ interface StampTemplate {
 }
 
 const STAMPS: StampTemplate[] = [
-    { label: 'OFERTA 🔥', text: 'OFERTA', fill: '#ffffff', backgroundColor: '#475569', fontFamily: 'Bebas Neue', fontSize: 100 },
-    { label: 'ÚLTIMAS UNIDADES ⏳', text: 'ÚLTIMAS\nUNIDADES', fill: '#1a1a1a', backgroundColor: '#FFD700', fontFamily: 'Bebas Neue', fontSize: 80 },
-    { label: 'NUEVA COLECCIÓN ✨', text: 'NUEVA\nCOLECCIÓN', fill: '#ffffff', backgroundColor: '#1a1a1a', fontFamily: 'Montserrat', fontSize: 70 },
-    { label: 'PREMIUM 💎', text: 'PREMIUM', fill: '#FFD700', backgroundColor: '#1a1a1a', fontFamily: 'Playfair Display', fontSize: 90 },
-    { label: 'BÁSICO 👕', text: 'BÁSICO', fill: '#ffffff', backgroundColor: '#3B82F6', fontFamily: 'Montserrat', fontSize: 80 },
-    { label: 'SALE 🏷️', text: 'SALE', fill: '#ffffff', backgroundColor: '#FF4500', fontFamily: 'Bebas Neue', fontSize: 120 },
-    { label: 'FLASH ⚡', text: 'FLASH SALE', fill: '#1a1a1a', backgroundColor: '#32CD32', fontFamily: 'Bebas Neue', fontSize: 90 },
-    { label: 'MUST HAVE ❤️', text: 'MUST HAVE', fill: '#ffffff', backgroundColor: '#475569', fontFamily: 'Lobster', fontSize: 80 },
+    { label: 'MODA 🔥', text: 'OFERTA', fill: '#ffffff', backgroundColor: '#111827', fontFamily: 'Bebas Neue', fontSize: 100 },
+    { label: 'LIMITADO ⏳', text: 'ÚLTIMAS\nUNIDADES', fill: '#111827', backgroundColor: '#D4AF37', fontFamily: 'Bebas Neue', fontSize: 80 },
+    { label: 'EDITORIAL ✨', text: 'NUEVA\nCOLECCIÓN', fill: '#ffffff', backgroundColor: '#111827', fontFamily: 'Montserrat', fontSize: 70 },
+    { label: 'PREMIUM 💎', text: 'PREMIUM', fill: '#D4AF37', backgroundColor: '#111827', fontFamily: 'Cormorant Garamond', fontSize: 90 },
+    { label: 'BÁSICO 👕', text: 'BÁSICO', fill: '#ffffff', backgroundColor: '#4B5563', fontFamily: 'Montserrat', fontSize: 80 },
+    { label: 'SALE 🏷️', text: 'SALE', fill: '#ffffff', backgroundColor: '#B91C1C', fontFamily: 'Bebas Neue', fontSize: 120 },
+    { label: 'NUEVO ⚡', text: 'FLASH SALE', fill: '#ffffff', backgroundColor: '#065F46', fontFamily: 'Bebas Neue', fontSize: 90 },
+    { label: 'LUJO ❤️', text: 'MUST HAVE', fill: '#ffffff', backgroundColor: '#111827', fontFamily: 'Cormorant Garamond', fontSize: 80 },
 ];
 
 export function StampPicker({ isOpen, onClose, onAddStamp, canvasSize }: StampPickerProps) {
